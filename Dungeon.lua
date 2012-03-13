@@ -190,21 +190,21 @@ local function canOccupy(self, x, y)
     return not self:tileAt(x, y).blocksMovement
 end
 
-local function render(self, px, py, x, y, w, h)
+local function render(self, px, py, x, y)
     x = x or 1
     y = y or 1
     for dx,dy,t in self:traverse() do
         if self:canSee(px, py, dx, dy) then
             t.visited = true
             if t.golem then
-                t.golem:render(dx, dy)
+                t.golem:render(dx + x - 1, dy + y - 1)
             else
-                t:render(dx, dy)
+                t:render(dx + x - 1, dy + y - 1)
             end
         elseif t.visited then
-            t:render(dx, dy, true)
+            t:render(dx + x - 1, dy + y - 1, true)
         else
-            curses.move(dx, dy)
+            curses.move(dx + x - 1, dy + y - 1)
             curses.pick()
             curses.print(' ')
         end
@@ -217,6 +217,7 @@ local function Dungeon(width, height)
     return {
         _plane = plane,
         _vacant = {},
+        _player = nil,
 
         getWidth = getWidth,
         getHeight = getHeight,

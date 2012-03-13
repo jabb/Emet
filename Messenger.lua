@@ -6,6 +6,8 @@ local width = 0
 local height = 0
 local messages = {}
 
+local Messenger
+
 local function SetDimensions(w, h)
     width = w
     height = h
@@ -45,9 +47,11 @@ local function Render(x, y)
     end
 end
 
-return {
+Messenger = {
     SetDimensions = SetDimensions,
     Message = Message,
     Update = Update,
     Render = Render,
 }
+
+return Messenger

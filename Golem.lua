@@ -1,10 +1,19 @@
 #!/usr/bin/luajit2
 
 local curses = require 'curses'
+local Messenger = require 'Messenger'
 local Tokens = require 'Tokens'
 
 local function attack(self, other, with)
 
+end
+
+local function getX(self)
+    return self._x
+end
+
+local function getY(self)
+    return self._y
 end
 
 local function getHealth(self)
@@ -29,6 +38,7 @@ local function moveTo(self, x, y)
     self._x = x
     self._y = y
     self._dungeon:tileAt(self._x, self._y).golem = self
+    Messenger.Message(string.format("Moved to: (%d, %d)", x, y))
     return true
 end
 
@@ -50,6 +60,8 @@ local function Golem(dun, x, y)
         _y = y,
 
         attack = attack,
+        getX = getX,
+        getY = getY,
         getHealth = getHealth,
         isDead = isDead,
         moveTo = moveTo,
