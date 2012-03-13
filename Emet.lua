@@ -3,6 +3,7 @@
 local curses = require 'curses'
 local Dungeon = require 'Dungeon'
 local Golem = require 'Golem'
+local Info = require 'Info'
 local Messenger = require 'Messenger'
 local Keybindings = require 'Keybindings'
 
@@ -16,6 +17,9 @@ local function Initialize()
     --for x,y,t in Emet.Dungeon:traverse() do t.visited = true end
 
     Emet.Player = Golem(Emet.Dungeon, Emet.Dungeon:randomVacancy())
+
+    Emet.Info = Info
+    Emet.Info.SetDimensions(Emet.InfoWidth, Emet.InfoHeight)
 
     Emet.Messenger = Messenger
     Emet.Messenger.SetDimensions(Emet.MessengerWidth, Emet.MessengerHeight)
@@ -40,6 +44,7 @@ local function MainLoop()
     while true do
         Emet.Dungeon:render(Emet.Player:getX(), Emet.Player:getY(),
                             Emet.DungeonX, Emet.DungeonY)
+        Emet.Info.Render(Emet.InfoX, Emet.InfoY)
         Emet.Messenger.Render(Emet.MessengerX, Emet.MessengerY)
         Emet.Messenger.Update()
         Emet.Process(curses.get_key())
