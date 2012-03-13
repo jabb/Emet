@@ -10,7 +10,7 @@ math.randomseed(os.time())
 local dun = Dungeon(128, 32)
 dun:generate()
 
-for x,y,t in dun:traverse() do t.visited = true end
+--for x,y,t in dun:traverse() do t.visited = true end
 
 local player = Golem(dun, dun:randomVacancy())
 
