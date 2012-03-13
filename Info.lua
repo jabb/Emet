@@ -21,9 +21,10 @@ local function PopLayer()
     table.remove(layers)
 end
 
-local function NewField(name, x, y)
+local function NewField(name, x, y, len)
     layers[#layers][name] = {
         x = x, y = y,
+        length = len,
         value = 'nil',
         color = curses.white,
         attributes = {},
@@ -35,7 +36,11 @@ local function DeleteField(name)
 end
 
 local function SetField(name, value, color, ...)
-    layers[#layers][name].value = value
+    if layers[#layers][name].length then
+        layers[#layers][name].value = value:sub(1, layers[#layers][name].length)
+    else
+        layers[#layers][name].value = value
+    end
     layers[#layers][name].color = color or curses.white
     layers[#layers][name].attributes = {...}
 end

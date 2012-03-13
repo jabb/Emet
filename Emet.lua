@@ -21,11 +21,13 @@ local function Initialize()
     Emet.Info = Info
     Emet.Info.SetDimensions(Emet.InfoWidth, Emet.InfoHeight)
     Emet.Info.PushLayer()
-    Emet.Info.NewField("Name", 1, 1)
-    Emet.Info.SetField("Name", "Name: " .. Emet.Player:getName())
-    Emet.Info.NewField("Position", 1, 2)
-    Emet.Info.SetField("Position",
-        string.format("@(%d, %d)", Emet.Player:getX(), Emet.Player:getY()))
+    Emet.Info.NewField('Name', 1, 1, 32)
+    Emet.Info.SetField('Name', Emet.Player:getName())
+    Emet.Info.NewField('Health', 17, 1, 32)
+    Emet.Info.SetField('Health', 'HHHHH')
+    Emet.Info.NewField('Position', 1, 2, 32)
+    Emet.Info.SetField('Position',
+        string.format('@: (%d, %d)', Emet.Player:getX(), Emet.Player:getY()))
 
     Emet.Messenger = Messenger
     Emet.Messenger.SetDimensions(Emet.MessengerWidth, Emet.MessengerHeight)
@@ -45,8 +47,8 @@ local function Process(key)
     if action == 'Move Down-right' then Emet.Player:moveBy(1, 1) end
     if action == 'Quit' then os.exit() end
 
-    Emet.Info.SetField("Position",
-        string.format("@(%d, %d)", Emet.Player:getX(), Emet.Player:getY()))
+    Emet.Info.SetField('Position',
+        string.format('@: (%d, %d)', Emet.Player:getX(), Emet.Player:getY()))
 end
 
 local function MainLoop()
@@ -54,9 +56,11 @@ local function MainLoop()
         Emet.Dungeon:render(Emet.Player:getX(), Emet.Player:getY(),
             Emet.DungeonX, Emet.DungeonY)
         Emet.Info.Render(Emet.InfoX, Emet.InfoY)
-        Emet.Messenger.Render(Emet.MessengerX, Emet.MessengerY)
         Emet.Messenger.Update()
+        Emet.Messenger.Render(Emet.MessengerX, Emet.MessengerY)
         Emet.Process(curses.get_key())
+
+        -- Enemy stuff!
     end
 end
 
