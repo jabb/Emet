@@ -1,0 +1,3 @@
+#!/usr/bin/luajit2
+
+

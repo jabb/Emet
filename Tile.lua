@@ -19,6 +19,14 @@ local TileTable = {
         blocksMovement = false,
         blocksSight = false,
     },
+    Pit = {
+        name = 'Pit',
+        symbol = '>',
+        color = curses.magenta,
+        attributes = {curses.bold},
+        blocksMovement = false,
+        blocksSight = false,
+    },
 }
 
 local function render(self, x, y, shadowed)

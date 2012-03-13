@@ -146,6 +146,7 @@ local function randomVacancy(self)
 end
 
 local function generate(self)
+    self._vacant = {}
     for x, y in self._plane:traverse() do
         self._plane:at(x, y, Tile('Wall'))
     end
@@ -170,10 +171,13 @@ local function generate(self)
         RandomDig,
     }
 
-    for i=1, 50 do
+    for i=1, 100 do
         local r = math.random(#diggers)
         diggers[r](self, self:randomVacancy())
     end
+
+    local x, y = self:randomVacancy()
+    self:tileAt(x, y, Tile('Pit'))
 end
 
 local function canSee(self, sx, sy, ex, ey)
@@ -182,13 +186,21 @@ local function canSee(self, sx, sy, ex, ey)
     end)
 end
 
+local function canOccupy(self, x, y)
+    return not self:tileAt(x, y).blocksMovement
+end
+
 local function render(self, px, py, x, y, w, h)
     x = x or 1
     y = y or 1
     for dx,dy,t in self:traverse() do
         if self:canSee(px, py, dx, dy) then
             t.visited = true
-            t:render(dx, dy)
+            if t.golem then
+                t.golem:render(dx, dy)
+            else
+                t:render(dx, dy)
+            end
         elseif t.visited then
             t:render(dx, dy, true)
         else
@@ -216,6 +228,7 @@ local function Dungeon(width, height)
         randomVacancy = randomVacancy,
         generate = generate,
         canSee = canSee,
+        canOccupy = canOccupy,
         render = render,
     }
 end
