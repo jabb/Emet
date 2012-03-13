@@ -16,6 +16,10 @@ local function getY(self)
     return self._y
 end
 
+local function getName(self)
+    return self._name
+end
+
 local function getHealth(self)
     local health = 0
     for i,t in self._tokens:iterate() do
@@ -38,7 +42,6 @@ local function moveTo(self, x, y)
     self._x = x
     self._y = y
     self._dungeon:tileAt(self._x, self._y).golem = self
-    Messenger.Message(string.format("Moved to: (%d, %d)", x, y))
     return true
 end
 
@@ -52,8 +55,9 @@ local function render(self, x, y)
     curses.print('@')
 end
 
-local function Golem(dun, x, y)
+local function Golem(dun, x, y, name)
     local g = {
+        _name = name or "Golem",
         _tokens = Tokens('CCCCC'),
         _dungeon = dun,
         _x = x,
@@ -62,6 +66,7 @@ local function Golem(dun, x, y)
         attack = attack,
         getX = getX,
         getY = getY,
+        getName = getName,
         getHealth = getHealth,
         isDead = isDead,
         moveTo = moveTo,

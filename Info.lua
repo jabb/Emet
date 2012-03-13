@@ -42,10 +42,19 @@ end
 
 local function Render(x, y)
     if #layers < 1 then return end
+
+    local spaces = string.rep(' ', width)
+
+    for yy=y, y + height do
+        curses.move(x, yy)
+        curses.pick()
+        curses.print(spaces)
+    end
+
     for k,v in pairs(layers[#layers]) do
         curses.move(v.x + x - 1, v.y + y - 1)
         curses.pick(v.color, unpack(v.attributes))
-        curses.print("%s: %s", k, tostring(v.value))
+        curses.print("%s", tostring(v.value))
     end
 end
 
