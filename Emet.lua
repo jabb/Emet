@@ -20,6 +20,8 @@ local function Initialize()
 
     Emet.Info = Info
     Emet.Info.SetDimensions(Emet.InfoWidth, Emet.InfoHeight)
+    Emet.Info.PushLayer()
+    Emet.Info.NewField("Position", 1, 1)
 
     Emet.Messenger = Messenger
     Emet.Messenger.SetDimensions(Emet.MessengerWidth, Emet.MessengerHeight)
@@ -38,12 +40,15 @@ local function Process(key)
     if action == 'Move Down-left' then Emet.Player:moveBy(-1, 1) end
     if action == 'Move Down-right' then Emet.Player:moveBy(1, 1) end
     if action == 'Quit' then os.exit() end
+
+    Emet.Info.SetField("Position",
+        string.format("%d, %d", Emet.Player:getX(), Emet.Player:getY()))
 end
 
 local function MainLoop()
     while true do
         Emet.Dungeon:render(Emet.Player:getX(), Emet.Player:getY(),
-                            Emet.DungeonX, Emet.DungeonY)
+            Emet.DungeonX, Emet.DungeonY)
         Emet.Info.Render(Emet.InfoX, Emet.InfoY)
         Emet.Messenger.Render(Emet.MessengerX, Emet.MessengerY)
         Emet.Messenger.Update()

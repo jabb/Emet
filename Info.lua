@@ -22,16 +22,30 @@ local function PopLayer()
 end
 
 local function NewField(name, x, y)
-    layers[#layers][name] = {x=x, y=y}
+    layers[#layers][name] = {
+        x = x, y = y,
+        value = 'nil',
+        color = curses.white,
+        attributes = {},
+    }
 end
 
-local function SetField(name, value)
+local function DeleteField(name)
+    layers[#layers][name] = nil
+end
+
+local function SetField(name, value, color, ...)
     layers[#layers][name].value = value
+    layers[#layers][name].color = color or curses.white
+    layers[#layers][name].attributes = {...}
 end
 
-local function Render(self, x, y)
+local function Render(x, y)
+    if #layers < 1 then return end
     for k,v in pairs(layers[#layers]) do
-
+        curses.move(v.x + x - 1, v.y + y - 1)
+        curses.pick(v.color, unpack(v.attributes))
+        curses.print("%s: %s", k, tostring(v.value))
     end
 end
 
@@ -39,6 +53,8 @@ Info = {
     SetDimensions = SetDimensions,
     PushLayer = PushLayer,
     PopLayer = PopLayer,
+    NewField = NewField,
+    SetField = SetField,
     Render = Render,
 }
 
