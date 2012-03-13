@@ -3,6 +3,10 @@
 local curses = require 'curses'
 local Tokens = require 'Tokens'
 
+local function attack(self, other, with)
+
+end
+
 local function getHealth(self)
     local health = 0
     for i,t in self._tokens:iterate() do
@@ -45,6 +49,7 @@ local function Golem(dun, x, y)
         _x = x,
         _y = y,
 
+        attack = attack,
         getHealth = getHealth,
         isDead = isDead,
         moveTo = moveTo,

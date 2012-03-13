@@ -4,7 +4,30 @@ local TokenTable = {
     C = {
         name = 'Clay',
         class = 'Health',
-        onRemoval = function() return 'continue' end,
+        absorbs = 1,
+        onFirstRemoval = {'continue'},
+        onRemoval = {'continue'},
+    },
+    F = {
+        name = 'Flesh',
+        class = 'Health',
+        absorbs = 1,
+        onFirstRemoval = {'continue'},
+        onRemoval = {'continue'},
+    },
+    S = {
+        name = 'Stone',
+        class = 'Health',
+        absorbs = 1,
+        onFirstRemoval = {'continue'},
+        onRemoval = {'continue'},
+    },
+    M = {
+        name = 'Metal',
+        class = 'Health',
+        absorbs = 1,
+        onFirstRemoval = {'continue'},
+        onRemoval = {'continue'},
     },
 }
 

@@ -94,12 +94,10 @@ local function AStar(x0, y0, x1, y1, map, width, height, isBlocked)
         end
     end
 
-    if not nodes[y1] or not nodes[y1][x1] or not nodes[y1][x1].parent then
-        return nil
-    end
-
     local path = {}
-    local head = nodes[y1][x1]
+    local head = nodes[y1] and nodes[y1][x1]
+
+    if not head.parent then return path end
 
     while head do
         table.insert(path, {x=head.x, y=head.y})

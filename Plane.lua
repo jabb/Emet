@@ -17,8 +17,10 @@ local function traverse(self)
         local ry, rx = y, x
         y = y + 1
         if y > self.height then y = 1; x = x + 1 end
-        if x - 1 > self.width then return nil end
-        return rx, ry, self.elems[ry][rx]
+
+        if self:inBounds(rx, ry) then
+            return rx, ry, self.elems[ry][rx]
+        end
     end
 end
 
