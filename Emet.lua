@@ -13,7 +13,7 @@ local function Initialize()
 
     Emet.Dungeon = Dungeon(Emet.DungeonWidth, Emet.DungeonHeight)
     Emet.Dungeon:generate()
-    for x,y,t in Emet.Dungeon:traverse() do t.visited = true end
+    --for x,y,t in Emet.Dungeon:traverse() do t.visited = true end
 
     Emet.Player = Golem(Emet.Dungeon, Emet.Dungeon:randomVacancy())
 
