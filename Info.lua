@@ -133,10 +133,24 @@ local function GetInput(x, y, default, hook)
         elseif action == 'Activate' then
             return input
         elseif action == 'Quit' then
-            os.exit()
+            return default
         end
     end
     return default
+end
+
+local function AskYesNo(x, y, prompt, default)
+    default = default or 'No'
+    PushLayer()
+    NewField('Query', math.floor(width / 3), math.floor(height / 3))
+    NewSelectableField('Yes', math.floor(width / 3), math.floor(height / 2))
+    NewSelectableField('No', math.floor(width / 3) * 2, math.floor(height / 2))
+    SetField('Query', prompt)
+    SetField('Yes', 'Yes')
+    SetField('No', 'No')
+    local input = GetInput(x, y, default)
+    PopLayer()
+    return input
 end
 
 Info = {
@@ -148,6 +162,7 @@ Info = {
     SetField = SetField,
     Render = Render,
     GetInput = GetInput,
+    AskYesNo = AskYesNo,
 }
 
 return Info

@@ -6,11 +6,15 @@ local Messenger = require 'Messenger'
 local Tokens = require 'Tokens'
 
 local function attack(self, x, y, with)
-    Messenger.Message(self._name .. ' used ' .. with .. ' on you!')
+    if self._dungeon:tileAt(x, y).golem then
+        self._dungeon:tileAt(x, y).golem._tokens:remove()
+        return true
+    end
+    return false
 end
 
 local function bump(self, x, y)
-    self:attack(x, y, self._bumps[self._selectedBump])
+    return self:attack(x, y, self._bumps[self._selectedBump])
 end
 
 local function getX(self)

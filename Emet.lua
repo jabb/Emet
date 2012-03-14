@@ -41,22 +41,35 @@ end
 
 local function Process(key)
     local action = Keybindings[key]
-    if action == 'Move Up' then Emet.Player:moveBy(0, -1) end
-    if action == 'Move Down' then Emet.Player:moveBy(0, 1) end
-    if action == 'Move Left' then Emet.Player:moveBy(-1, 0) end
-    if action == 'Move Right' then Emet.Player:moveBy(1, 0) end
-    if action == 'Move Up-left' then Emet.Player:moveBy(-1, -1) end
-    if action == 'Move Up-right' then Emet.Player:moveBy(1, -1) end
-    if action == 'Move Down-left' then Emet.Player:moveBy(-1, 1) end
-    if action == 'Move Down-right' then Emet.Player:moveBy(1, 1) end
-    if action == 'Quit' then os.exit() end
+    local moved, dx, dy = false, 0, 0
+    if action == 'Move Up' then moved, dx, dy = true, 0, -1 end
+    if action == 'Move Down' then moved, dx, dy = true, 0, 1 end
+    if action == 'Move Left' then moved, dx, dy = true, -1, 0 end
+    if action == 'Move Right' then moved, dx, dy = true, 1, 0 end
+    if action == 'Move Up-left' then moved, dx, dy = true, -1, -1 end
+    if action == 'Move Up-right' then moved, dx, dy = true, 1, -1 end
+    if action == 'Move Down-left' then moved, dx, dy = true, -1, 1 end
+    if action == 'Move Down-right' then moved, dx, dy = true, 1, 1 end
+
+    if moved and not Emet.Player:moveBy(dx, dy) then
+        if Emet.Player:bump(Emet.Player:getX() + dx, Emet.Player:getY() + dy) then
+            Messenger.Message('You dealt 1 damage!')
+        end
+    end
+
+    if action == 'Quit' then
+        local answer = Emet.Info.AskYesNo(Emet.InfoX, Emet.InfoY, 'Are you sure?')
+        if answer == 'Yes' then
+            os.exit()
+        end
+    end
     if action == 'Activate' then
         local px, py = Emet.Player:getX(), Emet.Player:getY()
         if Emet.Dungeon:golemAt(px, py) == Emet.Player then
             Emet.Enemies.Clear(Emet.Dungeon)
             Emet.Dungeon:generate()
             Emet.Enemies.Generate(Emet.Dungeon)
-            local px, py = Emet.Dungeon:randomVacancy()
+            local px, py = Emet.Dungeon:getRandomVacancy()
             Emet.Player:moveTo(px, py)
         end
     end
