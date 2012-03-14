@@ -1,5 +1,6 @@
 #!/usr/bin/luajit2
 
+local AStar = require 'AStar'
 local curses = require 'curses'
 local Messenger = require 'Messenger'
 local Tokens = require 'Tokens'
@@ -32,6 +33,27 @@ local function getHealth(self)
         end
     end
     return health
+end
+
+local function setTarget(self, x, y)
+    self._targetPath = AStar(self._x, self._y, x, y,
+        self._dungeon._plane.elems,
+        self._dungeon:getWidth(), self._dungeon:getHeight(),
+        function(t)
+            return t.blocksMovement
+        end)
+    self._targetN = 2
+end
+
+local function moveToTarget(self)
+    if self._targetPath and self._targetPath[self._targetN] then
+        local step = self._targetPath[self._targetN]
+        if self:moveTo(step.x, step.y) then
+            self._targetN = self._targetN + 1
+            return true
+        end
+    end
+    return false
 end
 
 local function isDead(self)
@@ -69,12 +91,17 @@ local function Golem(dun, x, y, name)
         _x = x,
         _y = y,
 
+        _targetN = nil,
+        _targetPath = nil,
+
         attack = attack,
         getX = getX,
         getY = getY,
         getPosition = getPosition,
         getName = getName,
         getHealth = getHealth,
+        setTarget = setTarget,
+        moveToTarget = moveToTarget,
         isDead = isDead,
         moveTo = moveTo,
         moveBy = moveBy,

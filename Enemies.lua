@@ -26,13 +26,10 @@ local function Update(dungeon, player)
         local gx, gy = list[i]:getPosition()
         local px, py = player:getPosition()
         if dungeon:canSee(gx, gy, px, py) then
-            local path = AStar(gx, gy, px, py, dungeon._plane.elems,
-                dungeon:getWidth(), dungeon:getHeight(),
-                function(t)
-                    return t.blocksMovement
-                end)
-
-            list[i]:moveTo(path[2].x, path[2].y)
+            list[i]:setTarget(px, py)
+            list[i]:moveToTarget()
+        else
+            list[i]:moveToTarget()
         end
 
         if list[i]:isDead() then
