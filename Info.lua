@@ -47,6 +47,14 @@ local function NewField(name, x, y, len)
 end
 
 local function DeleteField(name)
+    if layers[#layers][name].selectable then
+        for i=1, #selectables do
+            if selectables[i] == name then
+                table.remove(selectables, i)
+                break
+            end
+        end
+    end
     layers[#layers][name] = nil
 end
 
@@ -65,7 +73,7 @@ local function Render(x, y)
 
     local spaces = string.rep(' ', width)
 
-    for yy=y, y + height do
+    for yy=y, y + height - 1 do
         curses.move(x, yy)
         curses.pick()
         curses.print(spaces)
@@ -82,8 +90,12 @@ local function Render(x, y)
     end
 end
 
-local function GetInput(x, y, default)
-    local input = default
+local function GetInput(x, y, default, hook)
+    if #selectables < 1 then
+        return default
+    end
+
+    local input = default or selectables[1]
     local n
 
     for i=1, #selectables do
@@ -107,6 +119,7 @@ local function GetInput(x, y, default)
             end
             input = selectables[n]
             layers[#layers][input].selected = true
+            if hook then hook('Left', input) end
         elseif action == 'Move Right' then
             layers[#layers][input].selected = false
             n = n + 1
@@ -115,6 +128,7 @@ local function GetInput(x, y, default)
             end
             input = selectables[n]
             layers[#layers][input].selected = true
+            if hook then hook('Right', input) end
         elseif action == 'Activate' then
             return input
         elseif action == 'Quit' then

@@ -34,7 +34,7 @@ end
 local function Render(x, y)
     local spaces = string.rep(' ', width)
 
-    for yy=y, y + height do
+    for yy=y, y + height - 1 do
         curses.move(x, yy)
         curses.pick()
         curses.print(spaces)

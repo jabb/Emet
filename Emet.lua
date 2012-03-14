@@ -57,7 +57,11 @@ local function Process(key)
         Emet.Info.SetField('Yes', 'Yes')
         Emet.Info.SetField('No', 'No')
 
-        local input = Emet.Info.GetInput(Emet.InfoX, Emet.InfoY, 'No')
+        local input = Emet.Info.GetInput(Emet.InfoX, Emet.InfoY, 'No',
+            function(dir, value)
+                Emet.Messenger.Message('Selected: ' .. value)
+                Emet.Messenger.Render(Emet.MessengerX, Emet.MessengerY)
+            end)
 
         Emet.Messenger.Message('You chose: ' .. input)
 
