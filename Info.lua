@@ -24,6 +24,7 @@ local function PopLayer()
 end
 
 local function NewSelectableField(name, x, y, pos, len)
+    pos = pos or #selectables + 1
     layers[#layers][name] = {
         x = x, y = y,
         pos = pos,
@@ -33,7 +34,7 @@ local function NewSelectableField(name, x, y, pos, len)
         color = curses.white,
         attributes = {},
     }
-    table.insert(selectables, name)
+    table.insert(selectables, pos, name)
 end
 
 local function NewField(name, x, y, len)
