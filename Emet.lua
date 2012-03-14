@@ -74,7 +74,7 @@ local function MainLoop()
         Emet.Process(curses.get_key())
 
         -- Enemy stuff!
-        Emet.Enemies.Update()
+        Emet.Enemies.Update(Emet.Dungeon, Emet.Player)
     end
 end
 

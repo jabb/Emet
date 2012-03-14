@@ -30,7 +30,7 @@ local function AStarNode(t)
     return n
 end
 
-local function Heuristic(x0, y0, x1, y0)
+local function Heuristic(x0, y0, x1, y1)
     local dx = math.abs(x0 - x1)
     local dy = math.abs(y0 - y1)
     local diag = math.min(dx, dy)

@@ -50,7 +50,7 @@ local function iterate(self)
     local i = 0
     return function()
         i = i + 1
-        if i < self._tokens then return i, TokenTable[self._tokens[i]] end
+        if i < #self._tokens then return i, TokenTable[self._tokens[i]] end
     end
 end
 
