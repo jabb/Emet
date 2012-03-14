@@ -53,7 +53,8 @@ end
 
 local function RandomDig(d, cx, cy, x, y)
     cx, cy = cx or p.width / 2, cy or p.height / 2
-    x, y = x or math.random(d:getWidth()), y or math.random(d:getHeight())
+    x, y = x or math.random(2, d:getWidth() - 1),
+        y or math.random(2, d:getHeight() - 1)
     local dx, dy = 0, 0
     local marked = {}
 
@@ -73,13 +74,14 @@ local function RandomDig(d, cx, cy, x, y)
 
     for i,v in ipairs(marked) do
         d:tileAt(v.x, v.y, Tile('Floor'))
-        d:insertVacancy(x, y)
+        d:_insertVacany(x, y)
     end
 end
 
 local function RoomRandomDig(d, cx, cy, x, y)
     cx, cy = cx or p.width / 2, cy or p.height / 2
-    x, y = x or math.random(d:getWidth()), y or math.random(d:getHeight())
+    x, y = x or math.random(2, d:getWidth() - 1),
+        y or math.random(2, d:getHeight() - 1)
     local size = math.random(1, 3) -- Half-size. Size of the room is this*2+1
     local marked = {}
 
@@ -88,7 +90,7 @@ local function RoomRandomDig(d, cx, cy, x, y)
             if InBoundsSpecial(d, tx, ty) and d:tileAt(tx, ty).name == 'Wall' then
                 table.insert(marked, {x=tx, y=ty})
             else
-                return 0
+                return
             end
         end
     end
@@ -97,7 +99,7 @@ local function RoomRandomDig(d, cx, cy, x, y)
 
     for i,v in ipairs(marked) do
         d:tileAt(v.x, v.y, Tile('Floor'))
-        d:insertVacancy(x, y)
+        d:_insertVacany(x, y)
     end
 end
 
@@ -107,8 +109,40 @@ Dungeon
 
 --]]
 
+local function _insertVacany(self, x, y)
+    if not self._vacant[x .. ',' .. y] then
+        self._vacant[x .. ',' .. y] = true
+        table.insert(self._vacant, {x=x, y=y})
+    end
+end
+
+local function _removeVacancy(self, x, y)
+    if self._vacant[x .. ',' .. y] then
+        self._vacant[x .. ',' .. y] = nil
+        for i,v in ipairs(self._vacant) do
+            if v.x == x and v.y == y then
+                table.remove(self._vacant, i)
+                break
+            end
+        end
+    end
+end
+
+local function _randomVacancy(self)
+    if #self._vacant < 1 then return end
+    local r = math.random(#self._vacant)
+    return self._vacant[r].x, self._vacant[r].y
+end
+
 local function tileAt(self, x, y, to)
     return self._plane:at(x, y, to)
+end
+
+local function golemAt(self, x, y, to)
+    if to then
+        self:tileAt(x, y).golem = to
+    end
+    return self:tileAt(x, y).golem
 end
 
 local function inBounds(self, x, y)
@@ -127,29 +161,13 @@ local function getHeight(self)
     return self._plane.height
 end
 
-local function insertVacancy(self, x, y)
-    if not self._vacant[x .. ',' .. y] then
-        self._vacant[x .. ',' .. y] = true
-        table.insert(self._vacant, {x=x, y=y})
-    end
-end
-
-local function removeVacancy(self, x, y)
-    if self._vacant[x .. ',' .. y] then
-        self._vacant[x .. ',' .. y] = nil
-        for i,v in ipairs(self._vacant) do
-            if v.x == x and v.y == y then
-                table.remove(self._vacant, i)
-                break
-            end
+local function getRandomVacancy(self)
+    while true do
+        local x, y = math.random(self:getWidth()), math.random(self:getHeight())
+        if self:canOccupy(x, y) then
+            return x, y
         end
     end
-end
-
-local function randomVacancy(self)
-    if #self._vacant < 1 then return end
-    local r = math.random(#self._vacant)
-    return self._vacant[r].x, self._vacant[r].y
 end
 
 local function generate(self)
@@ -163,9 +181,9 @@ local function generate(self)
 
     for x=centerX-1, centerX+1 do
         for y=centerY-1, centerY+1 do
-            if self:inBounds(x, y) then
+            if InBoundsSpecial(self, x, y) then
                 self:tileAt(x, y, Tile('Floor'))
-                self:insertVacancy(x, y)
+                self:_insertVacany(x, y)
             end
         end
     end
@@ -180,10 +198,10 @@ local function generate(self)
 
     for i=1, 100 do
         local r = math.random(#diggers)
-        diggers[r](self, self:randomVacancy())
+        diggers[r](self, self:_randomVacancy())
     end
 
-    local x, y = self:randomVacancy()
+    local x, y = self:_randomVacancy()
     self:tileAt(x, y, Tile('Pit'))
 end
 
@@ -194,7 +212,7 @@ local function canSee(self, sx, sy, ex, ey)
 end
 
 local function canOccupy(self, x, y)
-    return not self:tileAt(x, y).blocksMovement
+    return not self:tileAt(x, y).blocksMovement and not self:golemAt(x, y)
 end
 
 local function render(self, px, py, x, y)
@@ -223,17 +241,20 @@ local function Dungeon(width, height)
 
     return {
         _plane = plane,
-        _vacant = {},
         _player = nil,
 
+        _vacant = {},
+        _insertVacany = _insertVacany,
+        _removeVacancy = _removeVacancy,
+        _randomVacancy = _randomVacancy,
+
+        tileAt = tileAt,
+        golemAt = golemAt,
         getWidth = getWidth,
         getHeight = getHeight,
-        tileAt = tileAt,
+        getRandomVacancy = getRandomVacancy,
         inBounds = inBounds,
         traverse = traverse,
-        insertVacancy = insertVacancy,
-        removeVacancy = removeVacancy,
-        randomVacancy = randomVacancy,
         generate = generate,
         canSee = canSee,
         canOccupy = canOccupy,

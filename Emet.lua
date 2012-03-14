@@ -2,6 +2,7 @@
 
 local curses = require 'curses'
 local Dungeon = require 'Dungeon'
+local Enemies = require 'Enemies'
 local Golem = require 'Golem'
 local Info = require 'Info'
 local Messenger = require 'Messenger'
@@ -15,7 +16,10 @@ local function Initialize()
     Emet.Dungeon = Dungeon(Emet.DungeonWidth, Emet.DungeonHeight)
     Emet.Dungeon:generate()
 
-    Emet.Player = Golem(Emet.Dungeon, Emet.Dungeon:randomVacancy())
+    Emet.Enemies = Enemies
+    Emet.Enemies.Generate(Emet.Dungeon)
+
+    Emet.Player = Golem(Emet.Dungeon, Emet.Dungeon:getRandomVacancy())
 
     Emet.Info = Info
     Emet.Info.SetDimensions(Emet.InfoWidth, Emet.InfoHeight)
@@ -26,7 +30,7 @@ local function Initialize()
     Emet.Info.SetField('Health', 'HHHHH')
     Emet.Info.NewField('Position', 1, 2, 32)
     Emet.Info.SetField('Position',
-        string.format('@: (%d, %d)', Emet.Player:getX(), Emet.Player:getY()))
+        string.format('@: (%d, %d)', Emet.Player:getPosition()))
 
     Emet.Messenger = Messenger
     Emet.Messenger.SetDimensions(Emet.MessengerWidth, Emet.MessengerHeight)
@@ -47,8 +51,10 @@ local function Process(key)
     if action == 'Quit' then os.exit() end
     if action == 'Activate' then
         local px, py = Emet.Player:getX(), Emet.Player:getY()
-        if Emet.Dungeon:tileAt(px, py).golem == Emet.Player then
+        if Emet.Dungeon:golemAt(px, py) == Emet.Player then
+            Emet.Enemies.Clear(Emet.Dungeon)
             Emet.Dungeon:generate()
+            Emet.Enemies.Generate(Emet.Dungeon)
             local px, py = Emet.Dungeon:randomVacancy()
             Emet.Player:moveTo(px, py)
         end
@@ -68,6 +74,7 @@ local function MainLoop()
         Emet.Process(curses.get_key())
 
         -- Enemy stuff!
+        Emet.Enemies.Update()
     end
 end
 

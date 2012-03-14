@@ -16,6 +16,10 @@ local function getY(self)
     return self._y
 end
 
+local function getPosition(self)
+    return self._x, self._y
+end
+
 local function getName(self)
     return self._name
 end
@@ -38,7 +42,9 @@ local function moveTo(self, x, y)
     if not self._dungeon:inBounds(x, y) or not self._dungeon:canOccupy(x, y) then
         return false
     end
-    self._dungeon:tileAt(self._x, self._y).golem = nil
+    if self._dungeon:tileAt(self._x, self._y).golem == self then
+        self._dungeon:tileAt(self._x, self._y).golem = nil
+    end
     self._x = x
     self._y = y
     self._dungeon:tileAt(self._x, self._y).golem = self
@@ -66,6 +72,7 @@ local function Golem(dun, x, y, name)
         attack = attack,
         getX = getX,
         getY = getY,
+        getPosition = getPosition,
         getName = getName,
         getHealth = getHealth,
         isDead = isDead,
