@@ -2,6 +2,7 @@
 
 local AStar = require 'AStar'
 local Golem = require 'Golem'
+local Messenger = require 'Messenger'
 
 local Enemies
 
@@ -27,9 +28,13 @@ local function Update(dungeon, player)
         local px, py = player:getPosition()
         if dungeon:canSee(gx, gy, px, py) then
             list[i]:setTarget(px, py)
-            list[i]:moveToTarget()
-        else
-            list[i]:moveToTarget()
+        end
+
+        if not list[i]:moveToTarget() then
+            local tile = list[i]:pathToTargetBlockedBy()
+            if tile and tile.golem == player then
+                Messenger.Message("You were barely scratched!)
+            end
         end
 
         if list[i]:isDead() then

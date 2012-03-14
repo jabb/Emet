@@ -56,6 +56,19 @@ local function moveToTarget(self)
     return false
 end
 
+local function pathToTargetBlockedBy(self)
+    if self._targetPath and self._targetPath[self._targetN] then
+        local step = self._targetPath[self._targetN]
+        local x, y = step.x, step.y
+        if self._dungeon:inBounds(x, y) and self._dungeon:canOccupy(x, y) then
+            return nil
+        elseif self._dungeon:inBounds(x, y) and not self._dungeon:canOccupy(x, y) then
+            return self._dungeon:tileAt(x, y)
+        end
+    end
+    return nil
+end
+
 local function isDead(self)
     return self:getHealth() < 1
 end
@@ -102,6 +115,7 @@ local function Golem(dun, x, y, name)
         getHealth = getHealth,
         setTarget = setTarget,
         moveToTarget = moveToTarget,
+        pathToTargetBlockedBy = pathToTargetBlockedBy,
         isDead = isDead,
         moveTo = moveTo,
         moveBy = moveBy,
