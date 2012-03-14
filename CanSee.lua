@@ -5,6 +5,10 @@ local function CanSee(x0, y0, x1, y1, vis, sight, isBlocked)
         return t
     end
 
+    if math.sqrt((x0 - x1)^2 + (y0 - y1)^2) > vis then
+        return false
+    end
+
     local err, e2
     local dx = math.abs(x1 - x0)
     local dy = math.abs(y1 - y0)

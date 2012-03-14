@@ -1,6 +1,5 @@
 #!/usr/bin/luajit2
 
-local AStar = require 'AStar'
 local Golem = require 'Golem'
 local Messenger = require 'Messenger'
 
@@ -9,7 +8,7 @@ local Enemies
 local list = {}
 
 local function Generate(dungeon, count)
-    count = count or 20
+    count = count or 5
     for i=1, count do
         table.insert(list, Golem(dungeon, dungeon:getRandomVacancy()))
     end
@@ -31,9 +30,9 @@ local function Update(dungeon, player)
         end
 
         if not list[i]:moveToTarget() then
-            local tile = list[i]:pathToTargetBlockedBy()
+            local x, y, tile = list[i]:pathToTargetBlockedBy()
             if tile and tile.golem == player then
-                Messenger.Message('You were barely scratched!')
+                list[i]:bump(x, y)
             end
         end
 

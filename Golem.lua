@@ -5,8 +5,12 @@ local curses = require 'curses'
 local Messenger = require 'Messenger'
 local Tokens = require 'Tokens'
 
-local function attack(self, other, with)
+local function attack(self, x, y, with)
 
+end
+
+local function bump(self, x, y)
+    Messenger.Message('You were barely scratched!')
 end
 
 local function getX(self)
@@ -69,7 +73,7 @@ local function pathToTargetBlockedBy(self)
         if self._dungeon:inBounds(x, y) and self._dungeon:canOccupy(x, y) then
             return nil
         elseif self._dungeon:inBounds(x, y) and not self._dungeon:canOccupy(x, y) then
-            return self._dungeon:tileAt(x, y)
+            return x, y, self._dungeon:tileAt(x, y)
         end
     end
     return nil
@@ -117,6 +121,7 @@ local function Golem(dun, x, y, name)
         _targetPath = nil,
 
         attack = attack,
+        bump = bump,
         getX = getX,
         getY = getY,
         getPosition = getPosition,

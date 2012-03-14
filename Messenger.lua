@@ -41,7 +41,7 @@ local function Render(x, y)
     end
 
     for i=1, #messages do
-        curses.move(x, y + i - 1)
+        curses.move(x, y + height - i)
         curses.pick(messages[i][2], unpack(messages[i][3]))
         curses.print(messages[i][1])
     end

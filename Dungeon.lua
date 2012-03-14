@@ -196,7 +196,7 @@ local function generate(self)
         RandomDig,
     }
 
-    for i=1, 100 do
+    for i=1, 50 do
         local r = math.random(#diggers)
         diggers[r](self, self:_randomVacancy())
     end
