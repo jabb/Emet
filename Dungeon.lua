@@ -11,6 +11,13 @@ Dungeon Generation
 
 --]]
 
+-- This is used because I want a 1 think wall all the way around.
+-- Only the generation code uses this code.
+local function InBoundsSpecial(dun, x, y)
+    return x >= 2 and x <= dun._plane.width -1 and
+           y >= 2 and y <= dun._plane.height - 1
+end
+
 local function IsTowards(x, y, dx, dy, tox, toy)
     local tx, ty
 
@@ -51,7 +58,7 @@ local function RandomDig(d, cx, cy, x, y)
     local marked = {}
 
     while true do
-        if not d:inBounds(x, y) then
+        if not InBoundsSpecial(d, x, y) then
             x = x - dx
             y = y - dy
         elseif d:tileAt(x, y).name == 'Floor' then
@@ -78,7 +85,7 @@ local function RoomRandomDig(d, cx, cy, x, y)
 
     for tx=x-size, x+size do
         for ty=y-size, y+size do
-            if d:inBounds(tx, ty) and d:tileAt(tx, ty).name == 'Wall' then
+            if InBoundsSpecial(d, tx, ty) and d:tileAt(tx, ty).name == 'Wall' then
                 table.insert(marked, {x=tx, y=ty})
             else
                 return 0
