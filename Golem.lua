@@ -6,11 +6,11 @@ local Messenger = require 'Messenger'
 local Tokens = require 'Tokens'
 
 local function attack(self, x, y, with)
-
+    Messenger.Message(self._name .. ' used ' .. with .. ' on you!')
 end
 
 local function bump(self, x, y)
-    Messenger.Message('You were barely scratched!')
+    self:attack(x, y, self._bumps[self._selectedBump])
 end
 
 local function getX(self)
@@ -113,6 +113,10 @@ local function Golem(dun, x, y, name)
         _color = curses.red,
         _attributes = {},
         _tokens = Tokens('CCCCC'),
+        _selectedBump = 1,
+        _bumps = {"Maul"},
+        _selectedAction = 1,
+        _actions = {},
         _dungeon = dun,
         _x = x,
         _y = y,
