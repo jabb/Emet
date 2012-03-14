@@ -20,6 +20,7 @@ local function Initialize()
     Emet.Enemies.Generate(Emet.Dungeon)
 
     Emet.Player = Golem(Emet.Dungeon, Emet.Dungeon:getRandomVacancy())
+    Emet.Player:setDisplay('@', curses.green, curses.underline)
 
     Emet.Info = Info
     Emet.Info.SetDimensions(Emet.InfoWidth, Emet.InfoHeight)

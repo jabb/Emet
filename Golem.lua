@@ -35,6 +35,12 @@ local function getHealth(self)
     return health
 end
 
+local function setDisplay(self, symbol, color, ...)
+    self._symbol = symbol
+    self._color = color or curses.red
+    self._attributes = {...}
+end
+
 local function setTarget(self, x, y)
     self._targetPath = AStar(self._x, self._y, x, y,
         self._dungeon._plane.elems,
@@ -92,13 +98,16 @@ end
 
 local function render(self, x, y)
     curses.move(x, y)
-    curses.pick(curses.red, curses.bold)
-    curses.print('@')
+    curses.pick(self._color, unpack(self._attributes))
+    curses.print(self._symbol)
 end
 
 local function Golem(dun, x, y, name)
     local g = {
-        _name = name or "Golem",
+        _name = name or 'Golem',
+        _symbol = '@',
+        _color = curses.red,
+        _attributes = {},
         _tokens = Tokens('CCCCC'),
         _dungeon = dun,
         _x = x,
@@ -113,6 +122,7 @@ local function Golem(dun, x, y, name)
         getPosition = getPosition,
         getName = getName,
         getHealth = getHealth,
+        setDisplay = setDisplay,
         setTarget = setTarget,
         moveToTarget = moveToTarget,
         pathToTargetBlockedBy = pathToTargetBlockedBy,

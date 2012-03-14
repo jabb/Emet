@@ -33,7 +33,7 @@ local function Update(dungeon, player)
         if not list[i]:moveToTarget() then
             local tile = list[i]:pathToTargetBlockedBy()
             if tile and tile.golem == player then
-                Messenger.Message("You were barely scratched!)
+                Messenger.Message('You were barely scratched!')
             end
         end
 
