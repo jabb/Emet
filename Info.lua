@@ -1,12 +1,14 @@
 #!/usr/bin/luajit2
 
 local curses = require 'curses'
+local Keybindings = require 'Keybindings'
 
 local Info
 
 local width = 0
 local height = 0
 local layers = {}
+local selectables = {}
 
 local function SetDimensions(w, h)
     width = w
@@ -19,6 +21,19 @@ end
 
 local function PopLayer()
     table.remove(layers)
+end
+
+local function NewSelectableField(name, x, y, pos, len)
+    layers[#layers][name] = {
+        x = x, y = y,
+        pos = pos,
+        selectable = true,
+        length = len,
+        value = 'nil',
+        color = curses.white,
+        attributes = {},
+    }
+    table.insert(selectables, name)
 end
 
 local function NewField(name, x, y, len)
@@ -58,18 +73,66 @@ local function Render(x, y)
 
     for k,v in pairs(layers[#layers]) do
         curses.move(v.x + x - 1, v.y + y - 1)
-        curses.pick(v.color, unpack(v.attributes))
+        if v.selectable and v.selected then
+            curses.pick(v.color, curses.reverse, unpack(v.attributes))
+        else
+            curses.pick(v.color, unpack(v.attributes))
+        end
         curses.print("%s", tostring(v.value))
     end
+end
+
+local function GetInput(x, y, default)
+    local input = default
+    local n
+
+    for i=1, #selectables do
+        if selectables[i] == input then
+            n = i
+            break
+        end
+    end
+
+    layers[#layers][input].selected = true
+    while true do
+        Info.Render(x, y)
+        local action = Keybindings[curses.get_key()]
+        if action == 'Escape' then
+            return default
+        elseif action == 'Move Left' then
+            layers[#layers][input].selected = false
+            n = n - 1
+            if n < 1 then
+                n = #selectables
+            end
+            input = selectables[n]
+            layers[#layers][input].selected = true
+        elseif action == 'Move Right' then
+            layers[#layers][input].selected = false
+            n = n + 1
+            if n > #selectables then
+                n = 1
+            end
+            input = selectables[n]
+            layers[#layers][input].selected = true
+        elseif action == 'Activate' then
+            return input
+        elseif action == 'Quit' then
+            os.exit()
+        end
+    end
+    return default
 end
 
 Info = {
     SetDimensions = SetDimensions,
     PushLayer = PushLayer,
     PopLayer = PopLayer,
+    NewSelectableField = NewSelectableField,
     NewField = NewField,
     SetField = SetField,
     Render = Render,
+    GetInput = GetInput,
 }
 
 return Info

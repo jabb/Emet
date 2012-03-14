@@ -14,7 +14,7 @@ local function Initialize()
 
     Emet.Dungeon = Dungeon(Emet.DungeonWidth, Emet.DungeonHeight)
     Emet.Dungeon:generate()
-    --for x,y,t in Emet.Dungeon:traverse() do t.visited = true end
+    for x,y,t in Emet.Dungeon:traverse() do t.visited = true end
 
     Emet.Player = Golem(Emet.Dungeon, Emet.Dungeon:randomVacancy())
 
@@ -46,6 +46,23 @@ local function Process(key)
     if action == 'Move Down-left' then Emet.Player:moveBy(-1, 1) end
     if action == 'Move Down-right' then Emet.Player:moveBy(1, 1) end
     if action == 'Quit' then os.exit() end
+    if action == 'Activate' then
+        Emet.Info.PushLayer()
+
+        Emet.Info.NewField('Message', 20, 4)
+        Emet.Info.SetField('Message', 'Are you sure?')
+
+        Emet.Info.NewSelectableField('Yes', 20, 8)
+        Emet.Info.NewSelectableField('No', 40, 8)
+        Emet.Info.SetField('Yes', 'Yes')
+        Emet.Info.SetField('No', 'No')
+
+        local input = Emet.Info.GetInput(Emet.InfoX, Emet.InfoY, 'No')
+
+        Emet.Messenger.Message('You chose: ' .. input)
+
+        Emet.Info.PopLayer()
+    end
 
     Emet.Info.SetField('Position',
         string.format('@: (%d, %d)', Emet.Player:getX(), Emet.Player:getY()))

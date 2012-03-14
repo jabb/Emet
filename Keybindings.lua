@@ -20,5 +20,8 @@ return {
     [curses.key_left] = 'Move Left',
     [curses.key_right] = 'Move Right',
 
+    [string.byte('\n')] = 'Activate',
     [string.byte(' ')] = 'Activate',
+
+    [27] = 'Escape',
 }
