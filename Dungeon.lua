@@ -215,7 +215,7 @@ local function canOccupy(self, x, y)
     return not self:tileAt(x, y).blocksMovement and not self:golemAt(x, y)
 end
 
-local function render(self, px, py, x, y)
+local function render(self, px, py)
     x = x or 1
     y = y or 1
     for dx,dy,t in self:traverse() do

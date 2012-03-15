@@ -5,12 +5,15 @@ local Keybindings = require 'Keybindings'
 
 local Info
 
+local x, y = 0, 0
 local width = 0
 local height = 0
 local layers = {}
 local selectables = {}
 
-local function SetDimensions(w, h)
+local function SetBounds(xx, yy, w, h)
+    x = xx
+    y = yy
     width = w
     height = h
 end
@@ -69,7 +72,7 @@ local function SetField(name, value, color, ...)
     layers[#layers][name].attributes = {...}
 end
 
-local function Render(x, y)
+local function Render()
     if #layers < 1 then return end
 
     local spaces = string.rep(' ', width)
@@ -154,7 +157,7 @@ local function AskYesNo(x, y, prompt, default)
 end
 
 Info = {
-    SetDimensions = SetDimensions,
+    SetBounds = SetBounds,
     PushLayer = PushLayer,
     PopLayer = PopLayer,
     NewSelectableField = NewSelectableField,

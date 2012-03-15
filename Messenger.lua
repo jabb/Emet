@@ -2,13 +2,16 @@
 
 local curses = require 'curses'
 
+local x, y = 0, 0
 local width = 0
 local height = 0
 local messages = {}
 
 local Messenger
 
-local function SetDimensions(w, h)
+local function SetBounds(xx, yy, w, h)
+    x = xx
+    y = yy
     width = w
     height = h
 end
@@ -31,7 +34,7 @@ local function Update()
     end
 end
 
-local function Render(x, y)
+local function Render()
     local spaces = string.rep(' ', width)
 
     for yy=y, y + height - 1 do
@@ -41,14 +44,14 @@ local function Render(x, y)
     end
 
     for i=1, #messages do
-        curses.move(x, y + height - i)
+        curses.move(x, y + i - 1)
         curses.pick(messages[i][2], unpack(messages[i][3]))
         curses.print(messages[i][1])
     end
 end
 
 Messenger = {
-    SetDimensions = SetDimensions,
+    SetBounds = SetBounds,
     Message = Message,
     Update = Update,
     Render = Render,

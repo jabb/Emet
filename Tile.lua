@@ -14,6 +14,7 @@ local TileTable = {
     Floor = {
         name = 'Floor',
         symbol = '.',
+        shadowed = ' ',
         color = curses.blue,
         attributes = {},
         blocksMovement = false,
@@ -33,7 +34,7 @@ local function render(self, x, y, shadowed)
     curses.move(x, y)
     if shadowed then
         curses.pick(curses.blue, curses.bold)
-        curses.print(self.symbol)
+        curses.print(self.shadowed or self.symbol)
     else
         curses.pick(self.color, unpack(self.attributes))
         curses.print(self.symbol)
@@ -44,6 +45,7 @@ local function Tile(tile)
     return {
         name = TileTable[tile].name,
         symbol = TileTable[tile].symbol,
+        shadowed = TileTable[tile].shadowed,
         color = TileTable[tile].color,
         attributes = TileTable[tile].attributes,
         blocksMovement = TileTable[tile].blocksMovement,
