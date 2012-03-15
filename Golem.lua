@@ -51,7 +51,7 @@ end
 
 local function setTarget(self, x, y)
     self._targetPath = AStar(self._x, self._y, x, y,
-        self._dungeon._plane.elems,
+        self._dungeon._tiles,
         self._dungeon:getWidth(), self._dungeon:getHeight(),
         function(t)
             return t.blocksMovement

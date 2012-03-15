@@ -11,6 +11,22 @@ local Keybindings = require 'Keybindings'
 
 --[[
 
+Utilities.
+
+--]]
+
+getmetatable("").__mod = function(a, b)
+    if not b then
+        return a
+    elseif type(b) == "table" then
+        return string.format(a, unpack(b))
+    else
+        return string.format(a, b)
+    end
+end
+
+--[[
+
 Initialization.
 
 --]]
@@ -29,10 +45,10 @@ Info.SetBounds(Emet.InfoX, Emet.InfoY, Emet.InfoWidth, Emet.InfoHeight)
 Info.PushLayer()
 Info.NewField('Name', 1, 1, 32)
 Info.SetField('Name', Emet.Player:getName())
-Info.NewField('Health', 17, 1, 32)
+Info.NewField('Health', 1, 2, 32)
 Info.SetField('Health', 'HHHHH')
-Info.NewField('Position', 1, 2, 32)
-Info.SetField('Position', string.format('@: (%d, %d)', Emet.Player:getPosition()))
+Info.NewField('Position', 1, 3, 32)
+Info.SetField('Position', '@: (%d, %d)' % {Emet.Player:getPosition()})
 
 Messenger.SetBounds(Emet.MessengerX, Emet.MessengerY, Emet.MessengerWidth, Emet.MessengerHeight)
 
@@ -60,7 +76,7 @@ Main loop.
 --]]
 
 while true do
-    Emet.Dungeon:render(Emet.Player:getX(), Emet.Player:getY())
+    Emet.Dungeon:render(Emet.DungeonX, Emet.DungeonY)
     Info.Render()
     Messenger.Update()
     Messenger.Render()
@@ -100,7 +116,7 @@ while true do
         end
     end
 
-    Info.SetField('Position', string.format('@: (%d, %d)', Emet.Player:getX(), Emet.Player:getY()))
+    Info.SetField('Position', '@: (%d, %d)' % {Emet.Player:getPosition()})
 
     if moved then
         Enemies.Update(Emet.Dungeon, Emet.Player)

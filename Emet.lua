@@ -6,23 +6,23 @@ Emet = {
     Dungeon = nil,
     Player = nil,
 
-    ConsoleWidth = 128,
-    ConsoleHeight = 32,
+    ConsoleWidth = 80,
+    ConsoleHeight = 24,
 
     DungeonX = 1,
     DungeonY = 1,
-    DungeonWidth = 64,
-    DungeonHeight = 32,
+    DungeonWidth = 60,
+    DungeonHeight = 20,
 
-    InfoX = 65,
+    InfoX = 61,
     InfoY = 1,
-    InfoWidth = 64,
-    InfoHeight = 16,
+    InfoWidth = 20,
+    InfoHeight = 20,
 
-    MessengerX = 65,
-    MessengerY = 17,
-    MessengerWidth = 64,
-    MessengerHeight = 16,
+    MessengerX = 1,
+    MessengerY = 21,
+    MessengerWidth = 80,
+    MessengerHeight = 4,
 }
 
 return Emet

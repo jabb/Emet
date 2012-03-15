@@ -2,7 +2,7 @@
 
 local CanSee = require 'CanSee'
 local curses = require 'curses'
-local Plane = require 'Plane'
+local Emet = require 'Emet'
 local Tile = require 'Tile'
 
 --[[
@@ -14,8 +14,7 @@ Dungeon Generation
 -- This is used because I want a 1 think wall all the way around.
 -- Only the generation code uses this code.
 local function InBoundsSpecial(dun, x, y)
-    return x >= 2 and x <= dun._plane.width -1 and
-           y >= 2 and y <= dun._plane.height - 1
+    return x >= 2 and x <= dun:getWidth() -1 and y >= 2 and y <= dun:getHeight() - 1
 end
 
 local function IsTowards(x, y, dx, dy, tox, toy)
@@ -134,8 +133,29 @@ local function _randomVacancy(self)
     return self._vacant[r].x, self._vacant[r].y
 end
 
+local function getWidth(self)
+    return self._width
+end
+
+local function getHeight(self)
+    return self._height
+end
+
+local function getRandomVacancy(self)
+    while true do
+        local x = math.random(self:getWidth())
+        local y = math.random(self:getHeight())
+        if self:canOccupy(x, y) then
+            return x, y
+        end
+    end
+end
+
 local function tileAt(self, x, y, to)
-    return self._plane:at(x, y, to)
+    if to then
+        self._tiles[y][x] = to
+    end
+    return self._tiles[y][x]
 end
 
 local function golemAt(self, x, y, to)
@@ -146,34 +166,36 @@ local function golemAt(self, x, y, to)
 end
 
 local function inBounds(self, x, y)
-    return self._plane:inBounds(x, y)
+    return x >= 1 and x <= self:getWidth() and y >= 1 and y <= self:getHeight()
+end
+
+local function canSee(self, sx, sy, ex, ey)
+    return CanSee(sx, sy, ex, ey, 10, self._tiles, function(t)
+        return t.blocksSight
+    end)
+end
+
+local function canOccupy(self, x, y)
+    return not self:tileAt(x, y).blocksMovement and not self:golemAt(x, y)
 end
 
 local function traverse(self)
-    return self._plane:traverse()
-end
+    local y, x = 1, 1
+    return function()
+        local ry, rx = y, x
+        y = y + 1
+        if y > self:getHeight() then y = 1; x = x + 1 end
 
-local function getWidth(self)
-    return self._plane.width
-end
-
-local function getHeight(self)
-    return self._plane.height
-end
-
-local function getRandomVacancy(self)
-    while true do
-        local x, y = math.random(self:getWidth()), math.random(self:getHeight())
-        if self:canOccupy(x, y) then
-            return x, y
+        if self:inBounds(rx, ry) then
+            return rx, ry, self:tileAt(rx, ry)
         end
     end
 end
 
 local function generate(self)
     self._vacant = {}
-    for x, y in self._plane:traverse() do
-        self._plane:at(x, y, Tile('Wall'))
+    for x, y in self:traverse() do
+        self:tileAt(x, y, Tile('Wall'))
     end
 
     local centerX = math.random(self:getWidth())
@@ -203,21 +225,14 @@ local function generate(self)
 
     local x, y = self:_randomVacancy()
     self:tileAt(x, y, Tile('Pit'))
+
+    self._vacant = nil
 end
 
-local function canSee(self, sx, sy, ex, ey)
-    return CanSee(sx, sy, ex, ey, 10, self._plane.elems, function(t)
-        return t.blocksSight
-    end)
-end
-
-local function canOccupy(self, x, y)
-    return not self:tileAt(x, y).blocksMovement and not self:golemAt(x, y)
-end
-
-local function render(self, px, py)
+local function render(self, x, y)
     x = x or 1
     y = y or 1
+    local px, py = Emet.Player:getPosition()
     for dx,dy,t in self:traverse() do
         if self:canSee(px, py, dx, dy) then
             t.visited = true
@@ -237,27 +252,38 @@ local function render(self, px, py)
 end
 
 local function Dungeon(width, height)
-    local plane = Plane(width, height)
+    local tiles = {}
+
+    for y=1, height do
+        tiles[y] = {}
+        for x=1, width do
+            tiles[y][x] = nil
+        end
+    end
 
     return {
-        _plane = plane,
-        _player = nil,
+        _tiles = tiles,
+        _width = width,
+        _height = height,
 
-        _vacant = {},
+        -- These functions only help the generator's speed.
         _insertVacany = _insertVacany,
         _removeVacancy = _removeVacancy,
         _randomVacancy = _randomVacancy,
 
-        tileAt = tileAt,
-        golemAt = golemAt,
         getWidth = getWidth,
         getHeight = getHeight,
         getRandomVacancy = getRandomVacancy,
+
+        tileAt = tileAt,
+        golemAt = golemAt,
+
         inBounds = inBounds,
-        traverse = traverse,
-        generate = generate,
         canSee = canSee,
         canOccupy = canOccupy,
+
+        traverse = traverse,
+        generate = generate,
         render = render,
     }
 end
