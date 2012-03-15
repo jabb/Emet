@@ -28,7 +28,7 @@ end
 local function Update()
     for i=#messages, 1, -1 do
         messages[i].age = messages[i].age + 1
-        if messages[i].age > 20 then
+        if messages[i].age > 2 then
             table.remove(messages, i)
         end
     end

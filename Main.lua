@@ -91,7 +91,7 @@ while true do
     end
     if action == 'Activate' then
         local px, py = Emet.Player:getX(), Emet.Player:getY()
-        if Emet.Dungeon:golemAt(px, py).name == 'Pit' and Emet.Dungeon:golemAt(px, py) == Emet.Player then
+        if Emet.Dungeon:tileAt(px, py).name == 'Pit' and Emet.Dungeon:golemAt(px, py) == Emet.Player then
             Enemies.Clear(Emet.Dungeon)
             Emet.Dungeon:generate()
             Enemies.Generate(Emet.Dungeon)
@@ -102,5 +102,7 @@ while true do
 
     Info.SetField('Position', string.format('@: (%d, %d)', Emet.Player:getX(), Emet.Player:getY()))
 
-    Enemies.Update(Emet.Dungeon, Emet.Player)
+    if moved then
+        Enemies.Update(Emet.Dungeon, Emet.Player)
+    end
 end
