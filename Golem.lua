@@ -3,13 +3,13 @@
 local AStar = require 'AStar'
 local curses = require 'curses'
 local Emet = require 'Emet'
-local Tokens = require 'Tokens'
+local Being = require 'Being'
 
 local function attack(self, x, y, with)
     if Emet.Dungeon:tileAt(x, y).golem then
-        local info = Tokens.Attack(self._being, Emet.Dungeon:tileAt(x, y).golem._being, with)
+        local info = self._being:attack(Emet.Dungeon:tileAt(x, y).golem._being, with)
         curses.pick()
-        Emet.Messenger:message(Tokens.GenerateFlavorText(info))
+        Emet.Messenger:message(self._being.GenerateFlavorText(info))
         return true
     end
     return false
@@ -31,16 +31,20 @@ local function getPosition(self)
     return self._x, self._y
 end
 
-local function getName(self)
-    return self._name
+local function getNick(self)
+    return self._being._nick
+end
+
+local function setNick(self, nick)
+    self._being._nick = nick
 end
 
 local function getHealth(self)
-    return Tokens.HealthOf(self._being)
+    return self._being:healthOf()
 end
 
 local function getStatusString(self)
-    return table.concat(self._being.statuses, '')
+    return table.concat(self._being._statuses, '')
 end
 
 local function setDisplay(self, symbol, color, ...)
@@ -122,7 +126,7 @@ local function Golem(x, y, name)
         _symbol = '@',
         _color = curses.red,
         _attributes = {},
-        _being = Tokens.NewBeing('Golem', 'Golem'),
+        _being = Being('Golem'),
         _selectedBump = 'Maul',
         _selectedAction = nil,
         _x = x,
@@ -136,7 +140,8 @@ local function Golem(x, y, name)
         getX = getX,
         getY = getY,
         getPosition = getPosition,
-        getName = getName,
+        getNick = getNick,
+        setNick = setNick,
         getHealth = getHealth,
         getStatusString = getStatusString,
         setDisplay = setDisplay,

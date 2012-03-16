@@ -1,37 +1,6 @@
 #!/usr/bin/luajit
 
-local function deepcopy(object)
-    local lookup_table = {}
-    local function _copy(object)
-        if type(object) ~= "table" then
-            return object
-        elseif lookup_table[object] then
-            return lookup_table[object]
-        end
-        local new_table = {}
-        lookup_table[object] = new_table
-        for index, value in pairs(object) do
-            new_table[_copy(index)] = _copy(value)
-        end
-        return setmetatable(new_table, getmetatable(object))
-    end
-    return _copy(object)
-end
-
-local PeekStatus
-local RemoveStatus
-local InsertStatus
-local CountStatusKinds
-local CountStatusIcons
-
-local GenerateFlavorText
-local HealthOf
-local Attack
-local NewBeing
-
-
-
-local StatusList = {
+local StatusTable = {
     ["C"] = {
         icon = "C",
         name = "Clay",
@@ -141,7 +110,7 @@ local StatusList = {
 local ActionTable = {
     ["Maul"] = {
         name = "Maul",
-        desc = "A bludgeoning Attack.",
+        desc = "A bludgeoning attack.",
         kind = "bump",
         triggerFirst = nil,
         trigger = nil,
@@ -271,55 +240,40 @@ local ActionTable = {
     },
 }
 
--- To remove?
-local BeingTable = {
-    ["Golem"] = {
-        name = "Golem",
-        nick = "Golem",
-        desc = "",
-        kind = "golem",
-        actions = {["Maul"] = 2},
-        statuses = {"C", "C", "C", "C", "C"},
-    },
-}
 
 
-
---[[
-Internal functions.
---]]
-function PeekStatus(being)
-    return StatusList[being.statuses[math.random(1, #being.statuses)]]
+function peekStatus(self)
+    return self._statuses[math.random(1, #self._statuses)]
 end
 
-function RemoveStatus(being, st)
-    for i, v in ipairs(being.statuses) do
-        if v == st.icon then
-            table.remove(being.statuses, i)
+function removeStatus(self, st)
+    for i, v in ipairs(self._statuses) do
+        if v == st then
+            table.remove(self._statuses, i)
             return true
         end
     end
     return false
 end
 
-function InsertStatus(being, st)
-    table.insert(being.statuses, st)
+function insertStatus(self, st)
+    table.insert(self._statuses, st)
 end
 
-function CountStatusKinds(being, kind)
+function countStatusKinds(self, kind)
     local count = 0
-    for i, v in ipairs(being.statuses) do
-        if StatusList[v].kind == kind then
+    for i, v in ipairs(self._statuses) do
+        if StatusTable[v].kind == kind then
             count = count + 1
         end
     end
     return count
 end
 
-function CountStatusIcons(being, icon)
+function countStatusIcons(self, icon)
     local count = 0
-    for i, v in ipairs(being.statuses) do
-        if StatusList[v].icon == icon then
+    for i, v in ipairs(self._statuses) do
+        if StatusTable[v].icon == icon then
             count = count + 1
         end
     end
@@ -328,14 +282,11 @@ end
 
 
 
---[[
-External functions.
---]]
 function GenerateFlavorText(info)
     local str_table = {}
     local repl = {
-        attacker = info.attacker.nick,
-        defender = info.defender.nick,
+        attacker = info.attacker._nick,
+        defender = info.defender._nick,
         dmg = info.dmg,
     }
     local flavor = nil
@@ -359,8 +310,8 @@ function GenerateFlavorText(info)
             if removed_table[v] > removed_table[max] then max = v end
         end
 
-        if ActionTable[info.action.name].flavorTexts[StatusList[info.removed[1]].kind] then
-            flavor = ActionTable[info.action.name].flavorTexts[StatusList[info.removed[1]].kind][math.random(1, #ActionTable[info.action.name].flavorTexts[StatusList[info.removed[1]].kind])]
+        if ActionTable[info.action.name].flavorTexts[StatusTable[info.removed[1]].kind] then
+            flavor = ActionTable[info.action.name].flavorTexts[StatusTable[info.removed[1]].kind][math.random(1, #ActionTable[info.action.name].flavorTexts[StatusTable[info.removed[1]].kind])]
         else
             flavor = ActionTable[info.action.name].flavorTexts["default"][math.random(1, #ActionTable[info.action.name].flavorTexts["default"])]
         end
@@ -369,7 +320,7 @@ function GenerateFlavorText(info)
             table.insert(str_table, flavor)
         end
 
-        flavor = StatusList[max].flavorTexts[math.random(1, #StatusList[max].flavorTexts)]
+        flavor = StatusTable[max].flavorTexts[math.random(1, #StatusTable[max].flavorTexts)]
         if flavor ~= "" then
             flavor = string.gsub(flavor, "%$(%w+)", repl)
             table.insert(str_table, flavor)
@@ -382,17 +333,19 @@ function GenerateFlavorText(info)
     return table.concat(str_table, " ")
 end
 
-function HealthOf(being)
-    return CountStatusKinds(being, "health")
+function healthOf(self)
+    return self:countStatusKinds("health")
 end
 
-function Attack(attacker, defender, action)
+local function attack(self, defender, action)
+    local attacker = self
+
     local first = true
     local info = {
         attacker = attacker, -- Current attacker.
         defender = defender, -- Current defender.
         action = ActionTable[action], -- Current action.
-        ap = attacker.actions[action], -- Current AP.
+        ap = attacker._actions[action], -- Current AP.
 
         stop = nil, -- This will be a string containing the reason for the stop.
         status = nil, -- This is the current status being removed. Maybe.
@@ -405,11 +358,11 @@ function Attack(attacker, defender, action)
     while true do
 
         if info.stop then return info end
-        if HealthOf(attacker) < 1 then return info end
-        if HealthOf(defender) < 1 then return info end
+        if attacker:healthOf() < 1 then return info end
+        if defender:healthOf() < 1 then return info end
 
-        info.status = PeekStatus(defender)
-        local count = CountStatusIcons(defender, info.status.icon)
+        info.status = StatusTable[defender:peekStatus()]
+        local count = defender:countStatusIcons(info.status.icon)
 
         if first and info.action.triggerFirst then
             info.action.triggerFirst(info)
@@ -418,21 +371,21 @@ function Attack(attacker, defender, action)
         end
         if info.stop then return info end
 
-        if info.RemoveStatus or info.ap >= info.status.absorbs then
+        if info.forceRemove or info.ap >= info.status.absorbs then
 
             -- Not a forced remove, but an AP remove.
             if not info.forceRemove and info.ap >= info.status.absorbs then
                 info.ap = info.ap - info.status.absorbs
             end
-            RemoveStatus(defender, info.status)
+            defender:removeStatus(info.status.icon)
 
             if first and info.status.triggerFirst then
-                info.status.triggerFirst(info, msgs)
+                info.status.triggerFirst(info)
             elseif info.status.trigger then
-                info.status.trigger(info, msgs)
+                info.status.trigger(info)
             end
 
-            if CountStatusIcons(defender, info.status.icon) < count then
+            if defender:countStatusIcons(info.status.icon) < count then
                 if info.status.kind == "health" then info.dmg = info.dmg + 1 end
                 table.insert(info.removed, info.status.icon)
             end
@@ -448,24 +401,31 @@ function Attack(attacker, defender, action)
     end
 
     if #info.removed > 0 and info.removed[#info.removed].triggerLast then
-        info.removed[#info.removed].triggerLast(info, msgs)
+        info.removed[#info.removed].triggerLast(info)
     end
 
     return info
 end
 
-function NewBeing(name, nick)
-    local being = deepcopy(BeingTable[name] or {})
-    being.nick = nick
-    return being
+local function Being(nick, statuses)
+    return  {
+        _nick = nick,
+        _desc = "",
+        _kind = "golem",
+        _actions = {["Maul"] = 1},
+        _statuses = statuses or {"C", "C", "C", "C", "C"},
+
+        GenerateFlavorText = GenerateFlavorText,
+
+        peekStatus = peekStatus,
+        removeStatus = removeStatus,
+        insertStatus = insertStatus,
+        countStatusKinds = countStatusKinds,
+        countStatusIcons = countStatusIcons,
+
+        attack = attack,
+        healthOf = healthOf,
+    }
 end
 
-return {
-    StatusList = StatusList,
-    ActionTable = ActionTable,
-    BeingTable = BeingTable,
-    GenerateFlavorText = GenerateFlavorText,
-    HealthOf = HealthOf,
-    Attack = Attack,
-    NewBeing = NewBeing,
-}
+return Being

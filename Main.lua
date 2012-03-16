@@ -40,6 +40,7 @@ Emet.Enemies:generate()
 
 Emet.Player = Golem(Emet.Dungeon:getRandomVacancy())
 Emet.Player:setDisplay('@', curses.green, curses.underline)
+Emet.Player:setNick(os.getenv('USER') or string.match(os.tmpname(), '_(.*)'))
 
 Emet.Info = View(Emet.InfoX, Emet.InfoY, Emet.InfoWidth, Emet.InfoHeight)
 Emet.Messenger = View(Emet.MessengerX, Emet.MessengerY, Emet.MessengerWidth, Emet.MessengerHeight)
@@ -52,7 +53,7 @@ Main loop.
 
 --]]
 
-Emet.Info:print(1, 1, '%s' % Emet.Player:getName())
+Emet.Info:print(1, 1, '%s' % Emet.Player:getNick())
 Emet.Info:print(1, 2, '%s' % Emet.Player:getStatusString())
 Emet.Info:print(1, 3, '(%d, %d)' % {Emet.Player:getPosition()})
 
@@ -108,7 +109,7 @@ while true do
 
     Emet.Info:clear()
     Emet.Info:reset()
-    Emet.Info:print(1, 1, '%s' % Emet.Player:getName())
+    Emet.Info:print(1, 1, '%s' % Emet.Player:getNick())
     Emet.Info:print(1, 2, '%s' % Emet.Player:getStatusString())
     Emet.Info:print(1, 3, '(%d, %d)' % {Emet.Player:getPosition()})
 
