@@ -1,4 +1,4 @@
-#!/usr/bin/luajit2
+#!/usr/bin/luajit
 
 local Golem = require 'Golem'
 local Emet = require 'Emet'
@@ -7,47 +7,52 @@ local Enemies
 
 local list = {}
 
-local function Generate(dungeon, count)
+local function generate(self, count)
     count = count or 5
     for i=1, count do
-        table.insert(list, Golem(dungeon, dungeon:getRandomVacancy()))
+        table.insert(list, Golem(Emet.Dungeon:getRandomVacancy()))
     end
 end
 
-local function Clear(dungeon)
+local function clear(self)
     for i=#list, 1, -1 do
-        dungeon:tileAt(list[i]:getPosition()).golem = nil
+        Emet.Dungeon:tileAt(list[i]:getPosition()).golem = nil
     end
     list = {}
 end
 
-local function Update(dungeon, player)
+local function update(self, player)
     for i=#list, 1, -1 do
         local gx, gy = list[i]:getPosition()
         local px, py = player:getPosition()
-        if dungeon:canSee(gx, gy, px, py) then
+        if Emet.Dungeon:canSee(gx, gy, px, py) then
             list[i]:setTarget(px, py)
         end
 
-        if not list[i]:moveToTarget() then
-            local x, y, tile = list[i]:pathToTargetBlockedBy()
-            if tile and tile.golem == player then
-                Emet.Messenger:message(tile.golem:getName() .. ' dealt 1 damage to you!')
+        local x, y = list[i]:nextStep()
+        if x and not list[i]:canMoveTo(x, y) then
+            local golem = Emet.Dungeon:golemAt(x, y)
+            if golem == player then
+                Emet.Messenger:message(golem:getName() .. ' dealt 1 damage to you!')
                 list[i]:bump(x, y)
             end
+        elseif x then
+            list[i]:doStep()
         end
 
         if list[i]:isDead() then
-            dungeon:tileAt(list[i]:getPosition()).golem = nil
+            Emet.Dungeon:tileAt(list[i]:getPosition()).golem = nil
             table.remove(list, i)
         end
     end
 end
 
-Enemies = {
-    Generate = Generate,
-    Clear = Clear,
-    Update = Update,
-}
+local function Enemies()
+    return {
+        generate = generate,
+        clear = clear,
+        update = update,
+    }
+end
 
 return Enemies

@@ -1,4 +1,4 @@
-#!/usr/bin/luajit2
+#!/usr/bin/luajit
 
 local CanSee = require 'CanSee'
 local curses = require 'curses'
@@ -229,6 +229,10 @@ local function generate(self)
     self._vacant = nil
 end
 
+local function update(self)
+
+end
+
 local function render(self, x, y)
     x = x or 1
     y = y or 1
@@ -284,6 +288,7 @@ local function Dungeon(width, height)
 
         traverse = traverse,
         generate = generate,
+        update = update,
         render = render,
     }
 end

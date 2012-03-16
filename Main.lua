@@ -1,4 +1,4 @@
-#!/usr/bin/luajit2
+#!/usr/bin/luajit
 
 local curses = require 'curses'
 local Dungeon = require 'Dungeon'
@@ -35,9 +35,10 @@ math.randomseed(os.time())
 Emet.Dungeon = Dungeon(Emet.DungeonWidth, Emet.DungeonHeight)
 Emet.Dungeon:generate()
 
-Enemies.Generate(Emet.Dungeon)
+Emet.Enemies = Enemies()
+Emet.Enemies:generate()
 
-Emet.Player = Golem(Emet.Dungeon, Emet.Dungeon:getRandomVacancy())
+Emet.Player = Golem(Emet.Dungeon:getRandomVacancy())
 Emet.Player:setDisplay('@', curses.green, curses.underline)
 
 Emet.Info = View(Emet.InfoX, Emet.InfoY, Emet.InfoWidth, Emet.InfoHeight)
@@ -55,6 +56,7 @@ Emet.Info:print(1, 1, '%s' % Emet.Player:getName())
 Emet.Info:print(1, 2, '@: (%d, %d)' % {Emet.Player:getPosition()})
 
 while true do
+    Emet.Dungeon:update()
     Emet.Dungeon:render(Emet.DungeonX, Emet.DungeonY)
 
     local key = curses.get_key()
@@ -94,9 +96,9 @@ while true do
     if action == 'Activate' then
         local px, py = Emet.Player:getX(), Emet.Player:getY()
         if Emet.Dungeon:tileAt(px, py).name == 'Pit' and Emet.Dungeon:golemAt(px, py) == Emet.Player then
-            Enemies.Clear(Emet.Dungeon)
+            Emet.Enemies:clear()
             Emet.Dungeon:generate()
-            Enemies.Generate(Emet.Dungeon)
+            Emet.Enemies:generate()
             local px, py = Emet.Dungeon:getRandomVacancy()
             Emet.Player:moveTo(px, py)
         end
@@ -108,6 +110,6 @@ while true do
     Emet.Info:print(1, 2, '@: (%d, %d)' % {Emet.Player:getPosition()})
 
     if moved then
-        Enemies.Update(Emet.Dungeon, Emet.Player)
+        Emet.Enemies:update(Emet.Player)
     end
 end

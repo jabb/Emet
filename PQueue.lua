@@ -1,4 +1,4 @@
-#!/usr/bin/luajit2
+#!/usr/bin/luajit
 
 local function minPush(self, data)
     local i = #self._mem + 1

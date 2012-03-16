@@ -1,9 +1,10 @@
-#!/usr/bin/luajit2
+#!/usr/bin/luajit
 
 local Emet
 
 Emet = {
     Dungeon = nil,
+    Enemies = nil,
     Player = nil,
 
     ConsoleWidth = 80,

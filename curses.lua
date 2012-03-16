@@ -1,4 +1,4 @@
-#!/usr/bin/luajit2
+#!/usr/bin/luajit
 
 local ffi = require 'ffi'
 local ncurses = ffi.load 'ncursesw'

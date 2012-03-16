@@ -1,4 +1,4 @@
-#!/usr/bin/luajit2
+#!/usr/bin/luajit
 
 local function CanSee(x0, y0, x1, y1, vis, sight, isBlocked)
     isBlocked = isBlocked or function(t)
