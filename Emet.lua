@@ -23,6 +23,8 @@ Emet = {
     MessengerY = 21,
     MessengerWidth = 80,
     MessengerHeight = 4,
+
+    Messenger = nil,
 }
 
 return Emet

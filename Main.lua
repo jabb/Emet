@@ -6,8 +6,8 @@ local Enemies = require 'Enemies'
 local Info = require 'Info'
 local Emet = require 'Emet'
 local Golem = require 'Golem'
-local Messenger = require 'Messenger'
 local Keybindings = require 'Keybindings'
+local View = require 'View'
 
 --[[
 
@@ -50,7 +50,7 @@ Info.SetField('Health', 'HHHHH')
 Info.NewField('Position', 1, 3, 32)
 Info.SetField('Position', '@: (%d, %d)' % {Emet.Player:getPosition()})
 
-Messenger.SetBounds(Emet.MessengerX, Emet.MessengerY, Emet.MessengerWidth, Emet.MessengerHeight)
+Emet.Messenger = View(Emet.MessengerX, Emet.MessengerY, Emet.MessengerWidth, Emet.MessengerHeight)
 
 curses.start()
 
@@ -64,7 +64,7 @@ local w, h = curses.size()
 while w ~= Emet.ConsoleWidth or h ~= Emet.ConsoleHeight do
     curses.move(0, 0)
     curses.pick()
-    curses.print("Please resize to %dx%d.", Emet.ConsoleWidth, Emet.ConsoleHeight)
+    curses.print('Please resize to %dx%d.', Emet.ConsoleWidth, Emet.ConsoleHeight)
     curses.get_key()
     w, h = curses.size()
 end
@@ -78,10 +78,12 @@ Main loop.
 while true do
     Emet.Dungeon:render(Emet.DungeonX, Emet.DungeonY)
     Info.Render()
-    Messenger.Update()
-    Messenger.Render()
 
     local key = curses.get_key()
+
+    Emet.Messenger:clear()
+    Emet.Messenger:reset()
+
     local action = Keybindings[key]
     local moved, dx, dy = false, 0, 0
     if action == 'Move Up' then moved, dx, dy = true, 0, -1 end
@@ -95,7 +97,8 @@ while true do
 
     if moved and not Emet.Player:moveBy(dx, dy) then
         if Emet.Player:bump(Emet.Player:getX() + dx, Emet.Player:getY() + dy) then
-            Messenger.Message('You dealt 1 damage!')
+            curses.pick()
+            Emet.Messenger:message('You dealt 1 damage!')
         end
     end
 

@@ -2,7 +2,7 @@
 
 local AStar = require 'AStar'
 local curses = require 'curses'
-local Messenger = require 'Messenger'
+local Emet = require 'Emet'
 local Tokens = require 'Tokens'
 
 local function attack(self, x, y, with)

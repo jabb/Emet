@@ -1,7 +1,7 @@
 #!/usr/bin/luajit2
 
 local Golem = require 'Golem'
-local Messenger = require 'Messenger'
+local Emet = require 'Emet'
 
 local Enemies
 
@@ -32,7 +32,7 @@ local function Update(dungeon, player)
         if not list[i]:moveToTarget() then
             local x, y, tile = list[i]:pathToTargetBlockedBy()
             if tile and tile.golem == player then
-                Messenger.Message(tile.golem:getName() .. ' dealt 1 damage to you!')
+                Emet.Messenger:message(tile.golem:getName() .. ' dealt 1 damage to you!')
                 list[i]:bump(x, y)
             end
         end
