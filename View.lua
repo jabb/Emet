@@ -33,8 +33,9 @@ local function message(self, str, ...)
 end
 
 local function input(self)
-    local failed, res = pcall(string.char, curses.get_key)
-    if not failed then
+    local key = curses.get_key()
+    local success, res = pcall(string.char, key)
+    if success then
         return res
     end
 end

@@ -3,7 +3,6 @@
 local curses = require 'curses'
 local Dungeon = require 'Dungeon'
 local Enemies = require 'Enemies'
-local Info = require 'Info'
 local Emet = require 'Emet'
 local Golem = require 'Golem'
 local Keybindings = require 'Keybindings'
@@ -41,15 +40,7 @@ Enemies.Generate(Emet.Dungeon)
 Emet.Player = Golem(Emet.Dungeon, Emet.Dungeon:getRandomVacancy())
 Emet.Player:setDisplay('@', curses.green, curses.underline)
 
-Info.SetBounds(Emet.InfoX, Emet.InfoY, Emet.InfoWidth, Emet.InfoHeight)
-Info.PushLayer()
-Info.NewField('Name', 1, 1, 32)
-Info.SetField('Name', Emet.Player:getName())
-Info.NewField('Health', 1, 2, 32)
-Info.SetField('Health', 'HHHHH')
-Info.NewField('Position', 1, 3, 32)
-Info.SetField('Position', '@: (%d, %d)' % {Emet.Player:getPosition()})
-
+Emet.Info = View(Emet.InfoX, Emet.InfoY, Emet.InfoWidth, Emet.InfoHeight)
 Emet.Messenger = View(Emet.MessengerX, Emet.MessengerY, Emet.MessengerWidth, Emet.MessengerHeight)
 
 curses.start()
@@ -75,14 +66,18 @@ Main loop.
 
 --]]
 
+Emet.Info:print(1, 1, '%s' % Emet.Player:getName())
+Emet.Info:print(1, 2, '@: (%d, %d)' % {Emet.Player:getPosition()})
+
 while true do
     Emet.Dungeon:render(Emet.DungeonX, Emet.DungeonY)
-    Info.Render()
 
     local key = curses.get_key()
 
     Emet.Messenger:clear()
     Emet.Messenger:reset()
+    Emet.Info:clear()
+    Emet.Info:reset()
 
     local action = Keybindings[key]
     local moved, dx, dy = false, 0, 0
@@ -103,10 +98,15 @@ while true do
     end
 
     if action == 'Quit' then
-        local answer = Info.AskYesNo(Emet.InfoX, Emet.InfoY, 'Are you sure?')
-        if answer == 'Yes' then
+        Emet.Info:clear()
+        Emet.Info:reset()
+        Emet.Info:print(1, 1, 'Are you sure? (y/N)')
+        local answer = Emet.Info:input()
+        if answer == 'y' or answer == 'Y' then
             os.exit()
         end
+        Emet.Info:clear()
+        Emet.Info:reset()
     end
     if action == 'Activate' then
         local px, py = Emet.Player:getX(), Emet.Player:getY()
@@ -119,7 +119,8 @@ while true do
         end
     end
 
-    Info.SetField('Position', '@: (%d, %d)' % {Emet.Player:getPosition()})
+    Emet.Info:print(1, 1, '%s' % Emet.Player:getName())
+    Emet.Info:print(1, 2, '@: (%d, %d)' % {Emet.Player:getPosition()})
 
     if moved then
         Enemies.Update(Emet.Dungeon, Emet.Player)
