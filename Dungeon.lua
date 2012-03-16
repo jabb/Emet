@@ -81,7 +81,7 @@ local function RoomRandomDig(d, cx, cy, x, y)
     cx, cy = cx or p.width / 2, cy or p.height / 2
     x, y = x or math.random(2, d:getWidth() - 1),
         y or math.random(2, d:getHeight() - 1)
-    local size = math.random(1, 3) -- Half-size. Size of the room is this*2+1
+    local size = math.random(1, 5) -- Half-size. Size of the room is this*2+1
     local marked = {}
 
     for tx=x-size, x+size do

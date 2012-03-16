@@ -47,21 +47,6 @@ curses.start()
 
 --[[
 
-Pause for resize.
-
---]]
-
-local w, h = curses.size()
-while w ~= Emet.ConsoleWidth or h ~= Emet.ConsoleHeight do
-    curses.move(0, 0)
-    curses.pick()
-    curses.print('Please resize to %dx%d.', Emet.ConsoleWidth, Emet.ConsoleHeight)
-    curses.get_key()
-    w, h = curses.size()
-end
-
---[[
-
 Main loop.
 
 --]]
@@ -76,8 +61,6 @@ while true do
 
     Emet.Messenger:clear()
     Emet.Messenger:reset()
-    Emet.Info:clear()
-    Emet.Info:reset()
 
     local action = Keybindings[key]
     local moved, dx, dy = false, 0, 0
@@ -98,15 +81,15 @@ while true do
     end
 
     if action == 'Quit' then
-        Emet.Info:clear()
-        Emet.Info:reset()
-        Emet.Info:print(1, 1, 'Are you sure? (y/N)')
-        local answer = Emet.Info:input()
+        Emet.Messenger:clear()
+        Emet.Messenger:reset()
+        Emet.Messenger:print(1, 1, 'Are you sure? (y/N)')
+        local answer = Emet.Messenger:input()
         if answer == 'y' or answer == 'Y' then
             os.exit()
         end
-        Emet.Info:clear()
-        Emet.Info:reset()
+        Emet.Messenger:clear()
+        Emet.Messenger:reset()
     end
     if action == 'Activate' then
         local px, py = Emet.Player:getX(), Emet.Player:getY()
@@ -119,6 +102,8 @@ while true do
         end
     end
 
+    Emet.Info:clear()
+    Emet.Info:reset()
     Emet.Info:print(1, 1, '%s' % Emet.Player:getName())
     Emet.Info:print(1, 2, '@: (%d, %d)' % {Emet.Player:getPosition()})
 

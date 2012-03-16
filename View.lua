@@ -5,7 +5,7 @@ local Keybindings = require 'Keybindings'
 
 local function clear(self, line)
     if line then
-        self:print(0, line, (' '):rep(self._width))
+        self:print(1, line, (' '):rep(self._width))
     else
         for i=1, self._height do
             self:print(1, i, (' '):rep(self._width))
@@ -23,7 +23,9 @@ local function print(self, x, y, str, ...)
 end
 
 local function message(self, str, ...)
-    if self._yInc > self._height then
+    if self._yInc >= self._height then
+        self:print(1, self._yInc, '--More--')
+        self:input()
         self:clear()
         self:reset()
     end
