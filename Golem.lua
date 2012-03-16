@@ -7,14 +7,16 @@ local Tokens = require 'Tokens'
 
 local function attack(self, x, y, with)
     if Emet.Dungeon:tileAt(x, y).golem then
-        Emet.Dungeon:tileAt(x, y).golem._tokens:remove()
+        local info = Tokens.Attack(self._being, Emet.Dungeon:tileAt(x, y).golem._being, with)
+        curses.pick()
+        Emet.Messenger:message(Tokens.GenerateFlavorText(info))
         return true
     end
     return false
 end
 
 local function bump(self, x, y)
-    return self:attack(x, y, self._bumps[self._selectedBump])
+    return self:attack(x, y, self._selectedBump)
 end
 
 local function getX(self)
@@ -34,13 +36,11 @@ local function getName(self)
 end
 
 local function getHealth(self)
-    local health = 0
-    for i,t in self._tokens:iterate() do
-        if t.class == 'Health' then
-            health = health + 1
-        end
-    end
-    return health
+    return Tokens.HealthOf(self._being)
+end
+
+local function getStatusString(self)
+    return table.concat(self._being.statuses, '')
 end
 
 local function setDisplay(self, symbol, color, ...)
@@ -122,11 +122,9 @@ local function Golem(x, y, name)
         _symbol = '@',
         _color = curses.red,
         _attributes = {},
-        _tokens = Tokens('CCCCC'),
-        _selectedBump = 1,
-        _bumps = {"Maul"},
-        _selectedAction = 1,
-        _actions = {},
+        _being = Tokens.NewBeing('Golem', 'Golem'),
+        _selectedBump = 'Maul',
+        _selectedAction = nil,
         _x = x,
         _y = y,
 
@@ -140,6 +138,7 @@ local function Golem(x, y, name)
         getPosition = getPosition,
         getName = getName,
         getHealth = getHealth,
+        getStatusString = getStatusString,
         setDisplay = setDisplay,
         setTarget = setTarget,
         isDead = isDead,

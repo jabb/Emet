@@ -53,7 +53,8 @@ Main loop.
 --]]
 
 Emet.Info:print(1, 1, '%s' % Emet.Player:getName())
-Emet.Info:print(1, 2, '@: (%d, %d)' % {Emet.Player:getPosition()})
+Emet.Info:print(1, 2, '%s' % Emet.Player:getStatusString())
+Emet.Info:print(1, 3, '(%d, %d)' % {Emet.Player:getPosition()})
 
 while true do
     Emet.Dungeon:update()
@@ -76,10 +77,7 @@ while true do
     if action == 'Move Down-right' then moved, dx, dy = true, 1, 1 end
 
     if moved and not Emet.Player:moveBy(dx, dy) then
-        if Emet.Player:bump(Emet.Player:getX() + dx, Emet.Player:getY() + dy) then
-            curses.pick()
-            Emet.Messenger:message('You dealt 1 damage!')
-        end
+        Emet.Player:bump(Emet.Player:getX() + dx, Emet.Player:getY() + dy)
     end
 
     if action == 'Quit' then
@@ -104,12 +102,22 @@ while true do
         end
     end
 
+    if moved then
+        Emet.Enemies:update(Emet.Player)
+    end
+
     Emet.Info:clear()
     Emet.Info:reset()
     Emet.Info:print(1, 1, '%s' % Emet.Player:getName())
-    Emet.Info:print(1, 2, '@: (%d, %d)' % {Emet.Player:getPosition()})
+    Emet.Info:print(1, 2, '%s' % Emet.Player:getStatusString())
+    Emet.Info:print(1, 3, '(%d, %d)' % {Emet.Player:getPosition()})
 
-    if moved then
-        Emet.Enemies:update(Emet.Player)
+    if Emet.Player:isDead() then
+        Emet.Messenger:clear()
+        Emet.Messenger:reset()
+        curses.pick()
+        Emet.Messenger:message('You died!')
+        Emet.Messenger:input()
+        os.exit()
     end
 end
