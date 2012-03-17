@@ -24,22 +24,6 @@ getmetatable("").__mod = function(a, b)
     end
 end
 
-function string.wrap(str, limit, indent, indent1)
-    indent = indent or ''
-    indent1 = indent1 or indent
-    limit = limit or 72
-    local here = 1 - #indent1
-    return indent1 .. str:gsub('(%s+)()(%S+)()',
-        function(sp, st, word, fi)
-            if fi - here > limit then
-                here = st - #indent
-            return '\n' .. indent .. word
-            end
-        end)
-end
-
-getmetatable('').__index.wrap = string.wrap
-
 --[[
 
 Initialization.
@@ -73,19 +57,16 @@ Main loop.
 
 Emet.Stats:print(1, 1, '%s' % Emet.Player:getNick())
 Emet.Stats:print(1, 2, '%s' % Emet.Player:getStatusString())
-Emet.Stats:print(1, 3, 'DLVL: %s' % Emet.Dungeon:getDungeonLevel())
-Emet.Stats:print(1, 4, 'Score: %s' % Emet.PlayerScore)
+Emet.Stats:print(1, 3, 'Emet/Met: %d/%d' % {Emet.Player:getEmet(), Emet.Player:getMet()})
+Emet.Stats:print(1, 4, 'DLVL: %s' % Emet.Dungeon:getDungeonLevel())
+Emet.Stats:print(1, 5, 'Score: %s' % Emet.PlayerScore)
 
 Emet.Stats:print(1, 7, 'Actions')
 Emet.Stats:print(1, 8, '1: %s' % Emet.Player:getBump())
 Emet.Stats:print(1, 9, '2: %s' % Emet.Player:getSpecial())
 
+Emet.Dungeon:render(Emet.DungeonX, Emet.DungeonY)
 while true do
-    Emet.Info:clear()
-    Emet.Info:reset()
-
-    Emet.Dungeon:render(Emet.DungeonX, Emet.DungeonY)
-
     local key = curses.get_key()
 
     Emet.Messenger:clear()
@@ -105,6 +86,19 @@ while true do
 
     if moved and not Emet.Player:moveBy(dx, dy) then
         Emet.Player:bump(Emet.Player:getX() + dx, Emet.Player:getY() + dy)
+    elseif moved then
+        local tile = Emet.Dungeon:tileAt(Emet.Player:getPosition())
+        if tile.emet then
+            Emet.Messenger:message('You picked up %d Emet!' % tile.emet)
+            Emet.Player:modEmet(tile.emet)
+            tile.emet = nil
+        end
+
+        if tile.met then
+            Emet.Messenger:message('You picked up %d Met!' % tile.met)
+            Emet.Player:modEmet(tile.met)
+            tile.met = nil
+        end
     end
 
     if action == 'Quit' then
@@ -148,12 +142,18 @@ while true do
     Emet.Stats:reset()
     Emet.Stats:print(1, 1, '%s' % Emet.Player:getNick())
     Emet.Stats:print(1, 2, '%s' % Emet.Player:getStatusString())
-    Emet.Stats:print(1, 3, 'DLVL: %s' % Emet.Dungeon:getDungeonLevel())
-    Emet.Stats:print(1, 4, 'Score: %s' % Emet.PlayerScore)
+    Emet.Stats:print(1, 3, 'Emet/Met: %d/%d' % {Emet.Player:getEmet(), Emet.Player:getMet()})
+    Emet.Stats:print(1, 4, 'DLVL: %s' % Emet.Dungeon:getDungeonLevel())
+    Emet.Stats:print(1, 5, 'Score: %s' % Emet.PlayerScore)
 
     Emet.Stats:print(1, 7, 'Actions')
     Emet.Stats:print(1, 8, '1: %s' % Emet.Player:getBump())
     Emet.Stats:print(1, 9, '2: %s' % Emet.Player:getSpecial())
+
+    Emet.Info:clear()
+    Emet.Info:reset()
+
+    Emet.Dungeon:render(Emet.DungeonX, Emet.DungeonY)
 
     if Emet.Player:isDead() then
         curses.pick()

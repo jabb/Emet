@@ -19,25 +19,20 @@ local function bump(self, x, y)
     return self:attack(x, y, self._selectedBump)
 end
 
-local function getX(self)
-    return self._x
-end
+local function getEmet(self) return self._emet end
+local function setEmet(self, to) self._emet = to end
+local function modEmet(self, by) self:setEmet(self._emet + by) end
 
-local function getY(self)
-    return self._y
-end
+local function getMet(self) return self._met end
+local function setMet(self, to) self._met = to end
+local function modMet(self, by) self:setMet(self._met + by) end
 
-local function getPosition(self)
-    return self._x, self._y
-end
+local function getX(self) return self._x end
+local function getY(self) return self._y end
+local function getPosition(self) return self._x, self._y end
 
-local function getNick(self)
-    return self._being._nick
-end
-
-local function setNick(self, nick)
-    self._being._nick = nick
-end
+local function getNick(self) return self._being._nick end
+local function setNick(self, nick) self._being._nick = nick end
 
 local function getStatusString(self)
     return table.concat(self._being._statuses, '')
@@ -49,12 +44,18 @@ local function setDisplay(self, symbol, color, ...)
     self._attributes = {...}
 end
 
-local function isDead(self)
-    return self._being:isDead()
+local function isDead(self) return self._being:isDead() end
+
+local function getAction(self, action)
+    return self._being._actions[action]
 end
 
 local function setAction(self, action, to)
     self._being._actions[action] = to
+end
+
+local function modAction(self, action, by)
+    self:setAction(action, self:getAction(action) + by)
 end
 
 local function cycleBump(self)
@@ -215,6 +216,8 @@ local function Golem(x, y, name)
         _being = Being('Golem'),
         _selectedBump = 'Maul',
         _selectedAction = nil,
+        _emet = 0,
+        _met = 0,
 
         _symbol = '@',
         _color = curses.red,
@@ -228,6 +231,13 @@ local function Golem(x, y, name)
         attack = attack,
         bump = bump,
 
+        getEmet = getEmet,
+        setEmet = setEmet,
+        modEmet = modEmet,
+        getMet = getMet,
+        setMet = setMet,
+        modMet = modMet,
+
         getX = getX,
         getY = getY,
         getPosition = getPosition,
@@ -237,7 +247,9 @@ local function Golem(x, y, name)
         setDisplay = setDisplay,
         isDead = isDead,
 
+        getAction = getAction,
         setAction = setAction,
+        modAction = modAction,
         cycleBump = cycleBump,
         getBump = getBump,
         getBumpDesc = getBumpDesc,

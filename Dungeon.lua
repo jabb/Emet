@@ -234,12 +234,18 @@ local function generate(self)
     local x, y = self:_randomVacancy()
     self:tileAt(x, y, Tile('Pit'))
 
+    self:tileAt(self:getRandomVacancy()).met = 1
+
     self._vacant = nil
 end
 
 local function update(self)
     if math.random() <= 0.01 then
         Emet.Enemies:generate(1)
+    end
+
+    if math.random() <= 0.01 then
+        self:tileAt(self:getRandomVacancy()).emet = math.random(1, 5)
     end
 end
 
@@ -260,6 +266,15 @@ local function render(self, x, y)
                 end
             else
                 t:render(dx + x - 1, dy + y - 1)
+                if t.met and t.met > 0 then
+                    curses.move(dx + x - 1, dy + y - 1)
+                    curses.pick(curses.red, curses.bold)
+                    curses.print('*')
+                elseif t.emet and t.emet > 0 then
+                    curses.move(dx + x - 1, dy + y - 1)
+                    curses.pick(curses.green, curses.bold)
+                    curses.print('*')
+                end
             end
         elseif t.visited then
             t:render(dx + x - 1, dy + y - 1, true)
