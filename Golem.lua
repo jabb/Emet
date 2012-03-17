@@ -39,10 +39,6 @@ local function setNick(self, nick)
     self._being._nick = nick
 end
 
-local function getHealth(self)
-    return self._being:healthOf()
-end
-
 local function getStatusString(self)
     return table.concat(self._being._statuses, '')
 end
@@ -53,6 +49,94 @@ local function setDisplay(self, symbol, color, ...)
     self._attributes = {...}
 end
 
+local function isDead(self)
+    return self._being:isDead()
+end
+
+local function cycleBump(self)
+    local bumps = {}
+    for k,_ in pairs(self._being._actions) do
+        if self._being.GetAction(k) and self._being.GetAction(k).kind == 'bump' then
+            table.insert(bumps, k)
+        end
+    end
+
+    if #bumps < 1 then return end
+
+    local i = 1
+    while true do
+        local done = false
+        if bumps[i] == self._selectedBump then
+            done = true
+        end
+
+        i = i + 1
+        if i > #bumps then
+            i = 1
+        end
+
+        if done then
+            self._selectedBump = bumps[i]
+            Emet.Messenger:message('%s' % self:getBumpDesc())
+            break
+        end
+    end
+end
+
+local function getBump(self)
+    return self._selectedBump or ''
+end
+
+local function getBumpDesc(self)
+    if self:getBump() ~= '' then
+        return self._being.GetAction(self:getBump()).desc or ''
+    else
+        return ''
+    end
+end
+
+local function cycleSpecial(self)
+    local specials = {}
+    for k,_ in pairs(self._being._actions) do
+        if self._being.GetAction(k) and self._being.GetAction(k).kind == 'special' then
+            table.insert(specials, k)
+        end
+    end
+
+    if #specials < 1 then return end
+
+    local i = 1
+    while true do
+        local done = false
+        if specials[i] == self._selectedSpecial then
+            done = true
+        end
+
+        i = i + 1
+        if i > #specials then
+            i = 1
+        end
+
+        if done then
+            self._selectedSpecial = specials[i]
+            Emet.Messenger:message('%s' % self:getSpecialDesc())
+            break
+        end
+    end
+end
+
+local function getSpecial(self)
+    return self._selectedSpecial or ''
+end
+
+local function getSpecialDesc(self)
+    if self:getSpecial() ~= '' then
+        return self._being.GetAction(self:getSpecial()).desc or ''
+    else
+        return ''
+    end
+end
+
 local function setTarget(self, x, y)
     self._targetPath = AStar(self._x, self._y, x, y,
         Emet.Dungeon._tiles,
@@ -61,10 +145,6 @@ local function setTarget(self, x, y)
             return t.blocksMovement
         end)
     self._targetN = 2
-end
-
-local function isDead(self)
-    return self:getHealth() < 1
 end
 
 local function moveTo(self, x, y)
@@ -137,22 +217,31 @@ local function Golem(x, y, name)
 
         attack = attack,
         bump = bump,
+
         getX = getX,
         getY = getY,
         getPosition = getPosition,
         getNick = getNick,
         setNick = setNick,
-        getHealth = getHealth,
         getStatusString = getStatusString,
         setDisplay = setDisplay,
-        setTarget = setTarget,
         isDead = isDead,
+
+        cycleBump = cycleBump,
+        getBump = getBump,
+        getBumpDesc = getBumpDesc,
+        cycleSpecial = cycleSpecial,
+        getSpecial = getSpecial,
+        getSpecialDesc = getSpecialDesc,
+
+        setTarget = setTarget,
         moveTo = moveTo,
         moveBy = moveBy,
         nextStep = nextStep,
         doStep = doStep,
         canMoveTo = canMoveTo,
         canMoveBy = canMoveBy,
+
         render = render,
     }
 

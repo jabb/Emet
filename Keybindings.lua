@@ -32,5 +32,7 @@ return {
     [string.byte('\n')] = 'Activate',
     [string.byte(' ')] = 'Activate',
 
+    [string.byte('a')] = 'CycleBump',
+
     [27] = 'Escape',
 }

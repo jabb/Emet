@@ -17,12 +17,28 @@ Utilities.
 getmetatable("").__mod = function(a, b)
     if not b then
         return a
-    elseif type(b) == "table" then
+    elseif type(b) == 'table' then
         return string.format(a, unpack(b))
     else
         return string.format(a, b)
     end
 end
+
+function string.wrap(str, limit, indent, indent1)
+    indent = indent or ''
+    indent1 = indent1 or indent
+    limit = limit or 72
+    local here = 1 - #indent1
+    return indent1 .. str:gsub('(%s+)()(%S+)()',
+        function(sp, st, word, fi)
+            if fi - here > limit then
+                here = st - #indent
+            return '\n' .. indent .. word
+            end
+        end)
+end
+
+getmetatable('').__index.wrap = string.wrap
 
 --[[
 
@@ -56,6 +72,9 @@ Main loop.
 Emet.Info:print(1, 1, '%s' % Emet.Player:getNick())
 Emet.Info:print(1, 2, '%s' % Emet.Player:getStatusString())
 Emet.Info:print(1, 3, '(%d, %d)' % {Emet.Player:getPosition()})
+
+Emet.Info:print(1, 5, 'Bump Action: %s' % Emet.Player:getBump())
+Emet.Info:print(1, 6, 'Spec Action: %s' % Emet.Player:getSpecial())
 
 while true do
     Emet.Dungeon:update()
@@ -92,15 +111,22 @@ while true do
         Emet.Messenger:clear()
         Emet.Messenger:reset()
     end
+
     if action == 'Activate' then
-        local px, py = Emet.Player:getX(), Emet.Player:getY()
+        local px, py = Emet.Player:getPosition()
         if Emet.Dungeon:tileAt(px, py).name == 'Pit' and Emet.Dungeon:golemAt(px, py) == Emet.Player then
             Emet.Enemies:clear()
             Emet.Dungeon:generate()
             Emet.Enemies:generate()
             local px, py = Emet.Dungeon:getRandomVacancy()
             Emet.Player:moveTo(px, py)
+        else
+            Emet.Player._being:heal(1)
         end
+    end
+
+    if action == 'CycleBump' then
+        Emet.Player:cycleBump()
     end
 
     if moved then
@@ -112,6 +138,9 @@ while true do
     Emet.Info:print(1, 1, '%s' % Emet.Player:getNick())
     Emet.Info:print(1, 2, '%s' % Emet.Player:getStatusString())
     Emet.Info:print(1, 3, '(%d, %d)' % {Emet.Player:getPosition()})
+
+    Emet.Info:print(1, 5, 'Bump Action: %s' % Emet.Player:getBump())
+    Emet.Info:print(1, 6, 'Spec Action: %s' % Emet.Player:getSpecial())
 
     if Emet.Player:isDead() then
         Emet.Messenger:clear()

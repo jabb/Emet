@@ -26,6 +26,7 @@ local function update(self, player)
         if list[i]:isDead() then
             Emet.Dungeon:tileAt(list[i]:getPosition()).golem = nil
             table.remove(list, i)
+            break
         end
 
         local gx, gy = list[i]:getPosition()

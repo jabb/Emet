@@ -1,5 +1,23 @@
 #!/usr/bin/luajit
 
+local function deepcopy(object)
+    local lookup_table = {}
+    local function _copy(object)
+        if type(object) ~= "table" then
+            return object
+        elseif lookup_table[object] then
+            return lookup_table[object]
+        end
+        local new_table = {}
+        lookup_table[object] = new_table
+        for index, value in pairs(object) do
+            new_table[_copy(index)] = _copy(value)
+        end
+        return setmetatable(new_table, getmetatable(object))
+    end
+    return _copy(object)
+end
+
 local StatusTable = {
     ["C"] = {
         icon = "C",
@@ -110,10 +128,14 @@ local StatusTable = {
 local ActionTable = {
     ["Maul"] = {
         name = "Maul",
-        desc = "A bludgeoning attack.",
+        desc = "A bludgeoning attack. Excellent against Clay.",
         kind = "bump",
         triggerFirst = nil,
-        trigger = nil,
+        trigger = function(info)
+            if math.random(1, 100) <= 25 and info.status.kind == "health" then
+                info.forceRemove = true
+            end
+        end,
         flavorTexts = {
             ["health"] = {
                 "$attacker mauls $defender."
@@ -135,7 +157,7 @@ local ActionTable = {
     -- To remove?
     ["Alert"] = {
         name = "Alert",
-        desc = "A normal Attack. A punch, or jab.",
+        desc = "",
         triggerFirst = function(info)
             local num_dodge = CountStatusIcons(info.attacker, "D")
             for i = num_dodge, info.ap - 1 do
@@ -242,47 +264,7 @@ local ActionTable = {
 
 
 
-function peekStatus(self)
-    return self._statuses[math.random(1, #self._statuses)]
-end
-
-function removeStatus(self, st)
-    for i, v in ipairs(self._statuses) do
-        if v == st then
-            table.remove(self._statuses, i)
-            return true
-        end
-    end
-    return false
-end
-
-function insertStatus(self, st)
-    table.insert(self._statuses, st)
-end
-
-function countStatusKinds(self, kind)
-    local count = 0
-    for i, v in ipairs(self._statuses) do
-        if StatusTable[v].kind == kind then
-            count = count + 1
-        end
-    end
-    return count
-end
-
-function countStatusIcons(self, icon)
-    local count = 0
-    for i, v in ipairs(self._statuses) do
-        if StatusTable[v].icon == icon then
-            count = count + 1
-        end
-    end
-    return count
-end
-
-
-
-function GenerateFlavorText(info)
+local function GenerateFlavorText(info)
     local str_table = {}
     local repl = {
         attacker = info.attacker._nick,
@@ -315,13 +297,13 @@ function GenerateFlavorText(info)
         else
             flavor = ActionTable[info.action.name].flavorTexts["default"][math.random(1, #ActionTable[info.action.name].flavorTexts["default"])]
         end
-        if flavor ~= "" then
+        if flavor ~= '' then
             flavor = string.gsub(flavor, "%$(%w+)", repl)
             table.insert(str_table, flavor)
         end
 
         flavor = StatusTable[max].flavorTexts[math.random(1, #StatusTable[max].flavorTexts)]
-        if flavor ~= "" then
+        if flavor ~= '' then
             flavor = string.gsub(flavor, "%$(%w+)", repl)
             table.insert(str_table, flavor)
         end
@@ -333,8 +315,54 @@ function GenerateFlavorText(info)
     return table.concat(str_table, " ")
 end
 
-function healthOf(self)
-    return self:countStatusKinds("health")
+local function GetAction(name)
+    return ActionTable[name]
+end
+
+local function peekStatus(self)
+    return self._statuses[math.random(1, #self._statuses)]
+end
+
+local function removeStatus(self, st)
+    for i, v in ipairs(self._statuses) do
+        if v == st then
+            table.remove(self._statuses, i)
+            return true
+        end
+    end
+    return false
+end
+
+local function insertStatus(self, st)
+    table.insert(self._statuses, st)
+end
+
+local function heal(self, by)
+    self._statuses = deepcopy(self._max)
+end
+
+local function countStatusKinds(self, kind)
+    local count = 0
+    for i, v in ipairs(self._statuses) do
+        if StatusTable[v].kind == kind then
+            count = count + 1
+        end
+    end
+    return count
+end
+
+local function countStatusIcons(self, icon)
+    local count = 0
+    for i, v in ipairs(self._statuses) do
+        if StatusTable[v].icon == icon then
+            count = count + 1
+        end
+    end
+    return count
+end
+
+local function isDead(self)
+    return self:countStatusKinds("health") < 1
 end
 
 local function attack(self, defender, action)
@@ -358,8 +386,8 @@ local function attack(self, defender, action)
     while true do
 
         if info.stop then return info end
-        if attacker:healthOf() < 1 then return info end
-        if defender:healthOf() < 1 then return info end
+        if attacker:isDead() then return info end
+        if defender:isDead() then return info end
 
         info.status = StatusTable[defender:peekStatus()]
         local count = defender:countStatusIcons(info.status.icon)
@@ -413,18 +441,21 @@ local function Being(nick, statuses)
         _desc = "",
         _kind = "golem",
         _actions = {["Maul"] = 1},
+        _max = deepcopy(statuses) or {"C", "C", "C", "C", "C"},
         _statuses = statuses or {"C", "C", "C", "C", "C"},
 
         GenerateFlavorText = GenerateFlavorText,
+        GetAction = GetAction,
 
         peekStatus = peekStatus,
         removeStatus = removeStatus,
         insertStatus = insertStatus,
+        heal = heal,
         countStatusKinds = countStatusKinds,
         countStatusIcons = countStatusIcons,
 
+        isDead = isDead,
         attack = attack,
-        healthOf = healthOf,
     }
 end
 

@@ -12,12 +12,12 @@ Emet = {
 
     DungeonX = 1,
     DungeonY = 5,
-    DungeonWidth = 60,
+    DungeonWidth = 50,
     DungeonHeight = 20,
 
-    InfoX = 61,
+    InfoX = 51,
     InfoY = 5,
-    InfoWidth = 20,
+    InfoWidth = 30,
     InfoHeight = 20,
 
     MessengerX = 1,
