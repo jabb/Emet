@@ -57,9 +57,11 @@ Emet.Enemies:generate()
 Emet.Player = Golem(Emet.Dungeon:getRandomVacancy())
 Emet.Player:setDisplay('@', curses.green, curses.underline)
 Emet.Player:setNick(os.getenv('USER') or string.match(os.tmpname(), '_(.*)'))
+Emet.Player:setAction('Maul', 5)
 
-Emet.Info = View(Emet.InfoX, Emet.InfoY, Emet.InfoWidth, Emet.InfoHeight)
 Emet.Messenger = View(Emet.MessengerX, Emet.MessengerY, Emet.MessengerWidth, Emet.MessengerHeight)
+Emet.Stats = View(Emet.StatsX, Emet.StatsY, Emet.StatsWidth, Emet.StatsHeight)
+Emet.Info = View(Emet.InfoX, Emet.InfoY, Emet.InfoWidth, Emet.InfoHeight)
 
 curses.start()
 
@@ -69,16 +71,19 @@ Main loop.
 
 --]]
 
-Emet.Info:print(1, 1, '%s' % Emet.Player:getNick())
-Emet.Info:print(1, 2, '%s' % Emet.Player:getStatusString())
-Emet.Info:print(1, 3, '(%d, %d)' % {Emet.Player:getPosition()})
+Emet.Stats:print(1, 1, '%s' % Emet.Player:getNick())
+Emet.Stats:print(1, 2, '%s' % Emet.Player:getStatusString())
+Emet.Stats:print(1, 3, 'DLVL: %s' % Emet.Dungeon:getDungeonLevel())
+Emet.Stats:print(1, 4, 'Score: %s' % Emet.PlayerScore)
 
-Emet.Info:print(1, 5, 'Actions')
-Emet.Info:print(1, 6, '1: %s' % Emet.Player:getBump())
-Emet.Info:print(1, 7, '2: %s' % Emet.Player:getSpecial())
+Emet.Stats:print(1, 7, 'Actions')
+Emet.Stats:print(1, 8, '1: %s' % Emet.Player:getBump())
+Emet.Stats:print(1, 9, '2: %s' % Emet.Player:getSpecial())
 
 while true do
-    Emet.Dungeon:update()
+    Emet.Info:clear()
+    Emet.Info:reset()
+
     Emet.Dungeon:render(Emet.DungeonX, Emet.DungeonY)
 
     local key = curses.get_key()
@@ -119,9 +124,12 @@ while true do
         if Emet.Dungeon:tileAt(px, py).name == 'Pit' and Emet.Dungeon:golemAt(px, py) == Emet.Player then
             Emet.Enemies:clear()
             Emet.Dungeon:generate()
+            Emet.Dungeon:incDungeonLevel()
             Emet.Enemies:generate()
             local px, py = Emet.Dungeon:getRandomVacancy()
             Emet.Player:moveTo(px, py)
+
+            Emet.PlayerScore = Emet.PlayerScore + ((Emet.Dungeon:getDungeonLevel() - 1) * 100)
         else
             Emet.Player._being:heal(1)
         end
@@ -133,17 +141,19 @@ while true do
 
     if moved then
         Emet.Enemies:update(Emet.Player)
+        Emet.Dungeon:update()
     end
 
-    Emet.Info:clear()
-    Emet.Info:reset()
-    Emet.Info:print(1, 1, '%s' % Emet.Player:getNick())
-    Emet.Info:print(1, 2, '%s' % Emet.Player:getStatusString())
-    Emet.Info:print(1, 3, '(%d, %d)' % {Emet.Player:getPosition()})
+    Emet.Stats:clear()
+    Emet.Stats:reset()
+    Emet.Stats:print(1, 1, '%s' % Emet.Player:getNick())
+    Emet.Stats:print(1, 2, '%s' % Emet.Player:getStatusString())
+    Emet.Stats:print(1, 3, 'DLVL: %s' % Emet.Dungeon:getDungeonLevel())
+    Emet.Stats:print(1, 4, 'Score: %s' % Emet.PlayerScore)
 
-    Emet.Info:print(1, 5, 'Actions')
-    Emet.Info:print(1, 6, '1: %s' % Emet.Player:getBump())
-    Emet.Info:print(1, 7, '2: %s' % Emet.Player:getSpecial())
+    Emet.Stats:print(1, 7, 'Actions')
+    Emet.Stats:print(1, 8, '1: %s' % Emet.Player:getBump())
+    Emet.Stats:print(1, 9, '2: %s' % Emet.Player:getSpecial())
 
     if Emet.Player:isDead() then
         curses.pick()

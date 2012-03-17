@@ -53,6 +53,10 @@ local function isDead(self)
     return self._being:isDead()
 end
 
+local function setAction(self, action, to)
+    self._being._actions[action] = to
+end
+
 local function cycleBump(self)
     local bumps = {}
     for k,_ in pairs(self._being._actions) do
@@ -81,10 +85,6 @@ local function cycleBump(self)
             break
         end
     end
-end
-
-local function setAction(self, action, to)
-    self._actions[action] = true
 end
 
 local function getBump(self)
@@ -192,13 +192,16 @@ end
 
 local function canMoveTo(self, x, y)
     if not Emet.Dungeon:inBounds(x, y) or not Emet.Dungeon:canOccupy(x, y) then
-        return false
+        -- You can move onto yourself.
+        if Emet.Dungeon:tileAt(x, y).golem ~= self then
+            return false
+        end
     end
     return true
 end
 
 local function canMoveBy(self, dx, dy)
-    return self:cMoveTo(self._x + dx, self._y + dy)
+    return self:canMoveTo(self._x + dx, self._y + dy)
 end
 
 local function render(self, x, y)
@@ -209,13 +212,13 @@ end
 
 local function Golem(x, y, name)
     local g = {
-        _name = name or 'Golem',
-        _symbol = '@',
-        _color = curses.red,
-        _attributes = {},
         _being = Being('Golem'),
         _selectedBump = 'Maul',
         _selectedAction = nil,
+
+        _symbol = '@',
+        _color = curses.red,
+        _attributes = {},
         _x = x,
         _y = y,
 
@@ -234,6 +237,7 @@ local function Golem(x, y, name)
         setDisplay = setDisplay,
         isDead = isDead,
 
+        setAction = setAction,
         cycleBump = cycleBump,
         getBump = getBump,
         getBumpDesc = getBumpDesc,

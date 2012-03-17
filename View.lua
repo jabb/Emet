@@ -17,6 +17,10 @@ local function reset(self)
     self._yInc = 1
 end
 
+local function linesLeft(self)
+    return self._height - self._yInc
+end
+
 local function print(self, x, y, str, ...)
     curses.move(self._x + x - 1, self._y + y - 1)
     curses.print((str % {...}):sub(1, self._width))
@@ -42,6 +46,9 @@ local function input(self)
     end
 end
 
+local function width(self) return self._width end
+local function height(self) return self._height end
+
 local function View(x, y, width, height)
     return {
         _x = x,
@@ -53,6 +60,7 @@ local function View(x, y, width, height)
 
         clear = clear,
         reset = reset,
+        linesLeft = linesLeft,
         print = print,
         message = message,
         input = input,

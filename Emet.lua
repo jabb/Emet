@@ -11,7 +11,7 @@ local StatusTable = {
         triggerLast = nil,
         trigger = nil,
         flavorTexts = {
-            "$defender's clay shell crumbles a bit'!",
+            "$defender's clay shell crumbles a bit!",
             "$defender staggers.",
             "$defender is missing a few chunks.",
             "$defender's clay makes a crunch sound.",
@@ -102,7 +102,7 @@ local function GenerateFlavorText(info)
     if info.stop and info.stop ~= "" then
         flavor = string.gsub(info.stop, "%$(%w+)", repl)
         table.insert(str_table, flavor)
-    else
+    elseif #info.removed > 0 then
         local removed_table = {}
         local max = nil
 
@@ -150,6 +150,7 @@ Emet = {
     Dungeon = nil,
     Enemies = nil,
     Player = nil,
+    PlayerScore = 0,
 
     ConsoleWidth = 80,
     ConsoleHeight = 24,
@@ -159,10 +160,15 @@ Emet = {
     DungeonWidth = 60,
     DungeonHeight = 20,
 
+    StatsX = 61,
+    StatsY = 5,
+    StatsWidth = 20,
+    StatsHeight = 10,
+
     InfoX = 61,
-    InfoY = 5,
+    InfoY = 15,
     InfoWidth = 20,
-    InfoHeight = 20,
+    InfoHeight = 10,
 
     MessengerX = 1,
     MessengerY = 1,
@@ -170,6 +176,8 @@ Emet = {
     MessengerHeight = 4,
 
     Messenger = nil,
+    Stats = nil,
+    Info = nil,
 }
 
 return Emet

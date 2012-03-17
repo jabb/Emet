@@ -179,6 +179,14 @@ local function canOccupy(self, x, y)
     return not self:tileAt(x, y).blocksMovement and not self:golemAt(x, y)
 end
 
+local function incDungeonLevel(self)
+    self._dlvl = self._dlvl + 1
+end
+
+local function getDungeonLevel(self)
+    return self._dlvl
+end
+
 local function traverse(self)
     local y, x = 1, 1
     return function()
@@ -230,7 +238,9 @@ local function generate(self)
 end
 
 local function update(self)
-
+    if math.random() <= 0.01 then
+        Emet.Enemies:generate(1)
+    end
 end
 
 local function render(self, x, y)
@@ -242,6 +252,12 @@ local function render(self, x, y)
             t.visited = true
             if t.golem then
                 t.golem:render(dx + x - 1, dy + y - 1)
+                if t.golem ~= Emet.Player and Emet.Info:linesLeft() >= 3 then
+                    curses.pick()
+                    Emet.Info:message(t.golem:getNick())
+                    Emet.Info:message(t.golem:getStatusString())
+                    Emet.Info:message('')
+                end
             else
                 t:render(dx + x - 1, dy + y - 1)
             end
@@ -269,6 +285,7 @@ local function Dungeon(width, height)
         _tiles = tiles,
         _width = width,
         _height = height,
+        _dlvl = 1,
 
         -- These functions only help the generator's speed.
         _insertVacany = _insertVacany,
@@ -285,6 +302,9 @@ local function Dungeon(width, height)
         inBounds = inBounds,
         canSee = canSee,
         canOccupy = canOccupy,
+
+        incDungeonLevel = incDungeonLevel,
+        getDungeonLevel = getDungeonLevel,
 
         traverse = traverse,
         generate = generate,
