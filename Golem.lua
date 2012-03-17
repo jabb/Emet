@@ -9,7 +9,7 @@ local function attack(self, x, y, with)
     if Emet.Dungeon:tileAt(x, y).golem then
         local info = self._being:attack(Emet.Dungeon:tileAt(x, y).golem._being, with)
         curses.pick()
-        Emet.Messenger:message(self._being.GenerateFlavorText(info))
+        Emet.Messenger:message(Emet.GenerateFlavorText(info))
         return true
     end
     return false
@@ -56,7 +56,7 @@ end
 local function cycleBump(self)
     local bumps = {}
     for k,_ in pairs(self._being._actions) do
-        if self._being.GetAction(k) and self._being.GetAction(k).kind == 'bump' then
+        if Emet.ActionTable[k] and Emet.ActionTable[k].kind == 'bump' then
             table.insert(bumps, k)
         end
     end
@@ -83,13 +83,17 @@ local function cycleBump(self)
     end
 end
 
+local function setAction(self, action, to)
+    self._actions[action] = true
+end
+
 local function getBump(self)
     return self._selectedBump or ''
 end
 
 local function getBumpDesc(self)
     if self:getBump() ~= '' then
-        return self._being.GetAction(self:getBump()).desc or ''
+        return Emet.ActionTable[self:getBump()].desc or ''
     else
         return ''
     end
@@ -98,7 +102,7 @@ end
 local function cycleSpecial(self)
     local specials = {}
     for k,_ in pairs(self._being._actions) do
-        if self._being.GetAction(k) and self._being.GetAction(k).kind == 'special' then
+        if Emet.ActionTable[k] and Emet.ActionTable[k].kind == 'special' then
             table.insert(specials, k)
         end
     end
@@ -131,7 +135,7 @@ end
 
 local function getSpecialDesc(self)
     if self:getSpecial() ~= '' then
-        return self._being.GetAction(self:getSpecial()).desc or ''
+        return Emet.ActionTable[self:getSpecial()].desc or ''
     else
         return ''
     end

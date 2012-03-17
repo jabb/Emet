@@ -143,11 +143,9 @@ while true do
     Emet.Info:print(1, 6, 'Spec Action: %s' % Emet.Player:getSpecial())
 
     if Emet.Player:isDead() then
-        Emet.Messenger:clear()
-        Emet.Messenger:reset()
         curses.pick()
-        Emet.Messenger:message('You died!')
-        Emet.Messenger:input()
+        Emet.Messenger:message('You died! Press "Quit" to exit...')
+        while Keybindings[curses.get_key()] ~= 'Quit' do end
         os.exit()
     end
 end

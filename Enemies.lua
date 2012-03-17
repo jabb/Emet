@@ -26,23 +26,22 @@ local function update(self, player)
         if list[i]:isDead() then
             Emet.Dungeon:tileAt(list[i]:getPosition()).golem = nil
             table.remove(list, i)
-            break
-        end
-
-        local gx, gy = list[i]:getPosition()
-        local px, py = player:getPosition()
-        if Emet.Dungeon:canSee(gx, gy, px, py) then
-            list[i]:setTarget(px, py)
-        end
-
-        local x, y = list[i]:nextStep()
-        if x and not list[i]:canMoveTo(x, y) then
-            local golem = Emet.Dungeon:golemAt(x, y)
-            if golem == player then
-                list[i]:bump(x, y)
+        else
+            local gx, gy = list[i]:getPosition()
+            local px, py = player:getPosition()
+            if Emet.Dungeon:canSee(gx, gy, px, py) then
+                list[i]:setTarget(px, py)
             end
-        elseif x then
-            list[i]:doStep()
+
+            local x, y = list[i]:nextStep()
+            if x and not list[i]:canMoveTo(x, y) then
+                local golem = Emet.Dungeon:golemAt(x, y)
+                if golem == player then
+                    list[i]:bump(x, y)
+                end
+            elseif x then
+                list[i]:doStep()
+            end
         end
     end
 end

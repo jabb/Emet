@@ -33,6 +33,4 @@ return {
     [string.byte(' ')] = 'Activate',
 
     [string.byte('a')] = 'CycleBump',
-
-    [27] = 'Escape',
 }
