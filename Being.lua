@@ -42,7 +42,23 @@ local function insertStatus(self, st)
 end
 
 local function heal(self, by)
-    self._statuses = deepcopy(self._max)
+    if not by then
+        self._statuses = deepcopy(self._max)
+    else
+        local missing = deepcopy(self._max)
+        for i=1, #self._statuses do
+            for j=1, #missing do
+                if missing[j] == self._statuses[i] then
+                    table.remove(missing, j)
+                    break
+                end
+            end
+        end
+
+        for i=1, by do
+            self:insertStatus(missing[i])
+        end
+    end
 end
 
 local function countStatusKinds(self, kind)

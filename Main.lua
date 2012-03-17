@@ -73,8 +73,9 @@ Emet.Info:print(1, 1, '%s' % Emet.Player:getNick())
 Emet.Info:print(1, 2, '%s' % Emet.Player:getStatusString())
 Emet.Info:print(1, 3, '(%d, %d)' % {Emet.Player:getPosition()})
 
-Emet.Info:print(1, 5, 'Bump Action: %s' % Emet.Player:getBump())
-Emet.Info:print(1, 6, 'Spec Action: %s' % Emet.Player:getSpecial())
+Emet.Info:print(1, 5, 'Actions')
+Emet.Info:print(1, 6, '1: %s' % Emet.Player:getBump())
+Emet.Info:print(1, 7, '2: %s' % Emet.Player:getSpecial())
 
 while true do
     Emet.Dungeon:update()
@@ -95,6 +96,7 @@ while true do
     if action == 'Move Up-right' then moved, dx, dy = true, 1, -1 end
     if action == 'Move Down-left' then moved, dx, dy = true, -1, 1 end
     if action == 'Move Down-right' then moved, dx, dy = true, 1, 1 end
+    if action == 'Wait' then moved = true end
 
     if moved and not Emet.Player:moveBy(dx, dy) then
         Emet.Player:bump(Emet.Player:getX() + dx, Emet.Player:getY() + dy)
@@ -139,12 +141,13 @@ while true do
     Emet.Info:print(1, 2, '%s' % Emet.Player:getStatusString())
     Emet.Info:print(1, 3, '(%d, %d)' % {Emet.Player:getPosition()})
 
-    Emet.Info:print(1, 5, 'Bump Action: %s' % Emet.Player:getBump())
-    Emet.Info:print(1, 6, 'Spec Action: %s' % Emet.Player:getSpecial())
+    Emet.Info:print(1, 5, 'Actions')
+    Emet.Info:print(1, 6, '1: %s' % Emet.Player:getBump())
+    Emet.Info:print(1, 7, '2: %s' % Emet.Player:getSpecial())
 
     if Emet.Player:isDead() then
         curses.pick()
-        Emet.Messenger:message('You died! Press "Quit" to exit...')
+        Emet.Messenger:message('You died! Press "Q" to exit...')
         while Keybindings[curses.get_key()] ~= 'Quit' do end
         os.exit()
     end

@@ -15,6 +15,8 @@ return {
     [string.byte('b')] = 'Move Down-left',
     [string.byte('n')] = 'Move Down-right',
 
+    [string.byte('.')] = 'Wait',
+
     [string.byte('1')] = 'Move Down-left',
     [string.byte('2')] = 'Move Down',
     [string.byte('3')] = 'Move Down-right',
@@ -23,6 +25,7 @@ return {
     [string.byte('7')] = 'Move Up-left',
     [string.byte('8')] = 'Move Up',
     [string.byte('9')] = 'Move Up-right',
+    [string.byte('5')] = 'Wait',
 
     [curses.key_up] = 'Move Up',
     [curses.key_down] = 'Move Down',

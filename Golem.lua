@@ -153,7 +153,10 @@ end
 
 local function moveTo(self, x, y)
     if not Emet.Dungeon:inBounds(x, y) or not Emet.Dungeon:canOccupy(x, y) then
-        return false
+        -- You can move onto yourself.
+        if Emet.Dungeon:tileAt(x, y).golem ~= self then
+            return false
+        end
     end
     if Emet.Dungeon:tileAt(self._x, self._y).golem == self then
         Emet.Dungeon:tileAt(self._x, self._y).golem = nil
