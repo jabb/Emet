@@ -13,6 +13,11 @@ local function GenerateGolem()
     local numStatuses = Emet.Dungeon:getDungeonLevel() + 1
     local action = Emet.BumpActions[math.random(#Emet.BumpActions)]
 
+    if base == 'C' then g:setNick('Clay Golem') end
+    if base == 'F' then g:setNick('Flesh Golem') end
+    if base == 'S' then g:setNick('Stone Golem') end
+    if base == 'M' then g:setNick('Metal Golem') end
+
     -- Add base statuses.
     local statuses = {}
     for i=1, math.floor(numStatuses / 2) do
@@ -21,7 +26,7 @@ local function GenerateGolem()
 
     -- Add extra statuses.
     local statusTypes = {
-        Emet.HealthStatuses, Emet.ArmorStatuses,
+        Emet.ArmorStatuses,
         Emet.SkillStatuses, Emet.SpecialStatuses,
         nil
     }

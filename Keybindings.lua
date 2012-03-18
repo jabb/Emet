@@ -35,5 +35,9 @@ return {
     [string.byte('\n')] = 'Activate',
     [string.byte(' ')] = 'Activate',
 
-    [string.byte('a')] = 'CycleBump',
+    [string.byte('a')] = 'Cycle Bump',
+    --[string.byte('d')] = 'Cycle Special',
+    --[string.byte('w')] = 'Use',
+
+    [string.byte('@')] = 'Upgrades',
 }

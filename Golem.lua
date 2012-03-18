@@ -5,11 +5,78 @@ local curses = require 'curses'
 local Emet = require 'Emet'
 local Being = require 'Being'
 
+local Upgrades = {
+    First = {
+        {
+            desc = 'Stay a Clay Golem. +1 to Maul.',
+            emet = 0,
+            met = 1,
+            apply = function(golem)
+                golem:modAction('Maul', 1)
+                golem:modUpgradeLevel(1)
+                Emet.Messenger:message('You are permanently a Clay Golem!')
+            end
+        },
+        {
+            desc = 'Turn into a Flesh Golem. All C tokens become F tokens.',
+            emet = 0,
+            met = 1,
+            apply = function(golem)
+                golem:setKind('Flesh')
+                golem:setStatuses({'F', 'F', 'F', 'F', 'F'}, true)
+                golem:modUpgradeLevel(1)
+                Emet.Messenger:message('You are permanently a Flesh Golem!')
+            end
+        },
+        {
+            desc = 'Turn into a Stone Golem. All C tokens become S tokens.',
+            emet = 0,
+            met = 1,
+            apply = function(golem)
+                golem:setKind('Stone')
+                golem:setStatuses({'S', 'S', 'S', 'S', 'S'}, true)
+                golem:modUpgradeLevel(1)
+                Emet.Messenger:message('You are permanently a Stone Golem!')
+            end
+        },
+        {
+            desc = 'Turn into a Metal Golem. All C tokens become M tokens.',
+            emet = 0,
+            met = 1,
+            apply = function(golem)
+                golem:setKind('Metal')
+                golem:setStatuses({'M', 'M', 'M', 'M', 'M'}, true)
+                golem:modUpgradeLevel(1)
+                Emet.Messenger:message('You are permanently a Metal Golem!')
+            end
+        },
+    },
+    Clay = {
+
+    },
+    Flesh = {
+
+    },
+    Stone = {
+
+    },
+    Metal = {
+
+    }
+}
+
 local function attack(self, x, y, with)
     if Emet.Dungeon:tileAt(x, y).golem then
         local info = self._being:attack(Emet.Dungeon:tileAt(x, y).golem._being, with)
         curses.pick()
-        Emet.Messenger:message(Emet.GenerateFlavorText(info))
+        local tab = Emet.GenerateFlavorText(info)
+        if string.len(table.concat(tab, ' ')) > Emet.MessengerWidth then
+            for i=1, #tab do
+                Emet.Messenger:message(tab[i])
+            end
+        else
+            Emet.Messenger:message(table.concat(tab, ' '))
+        end
         return true
     end
     return false
@@ -39,7 +106,12 @@ local function getNick(self) return self._being._nick end
 local function setNick(self, nick) self._being._nick = nick end
 
 local function getStatuses(self) return self._being._statuses end
-local function setStatuses(self, to) self._being._statuses = to end
+local function setStatuses(self, to, perm)
+    if perm then
+        self._being._max = table.deepcopy(to)
+    end
+    self._being._statuses = to
+end
 local function addStatuses(self, st, perm)
     if perm then
         if type(st) == 'table' then
@@ -58,6 +130,23 @@ local function addStatuses(self, st, perm)
     elseif type(st) == 'string' then
         table.insert(self._being._statuses, st)
     end
+end
+local function getMissingStatuses(self)
+    local missing = table.deepcopy(self._being._max)
+    for i=1, #self._being._statuses do
+        for j=1, #missing do
+            if missing[j] == self._being._statuses[i] then
+                table.remove(missing, j)
+                break
+            end
+        end
+    end
+    return missing
+end
+
+local function heal(self, by)
+    by = by or 1
+    self._being:heal(by)
 end
 
 local function getStatusString(self)
@@ -176,6 +265,25 @@ local function getSpecialDesc(self)
     end
 end
 
+local function getKind(self) return self._kind end
+local function setKind(self, to) self._kind = to end
+
+local function getUpgradeLevel(self) return self._upgrade end
+local function setUpgradeLevel(self, to) self._upgrade = to end
+local function modUpgradeLevel(self, by) self:setUpgradeLevel(self._upgrade + by) end
+
+local function getUpgrades(self)
+    if self:getUpgradeLevel() == 0 then
+        return Upgrades.First
+    else
+        return Upgrades[self:getKind()][self:getUpgradeLevel()]
+    end
+end
+
+local function doUpgrade(self, num)
+    self:getUpgrades()[num].apply(self)
+end
+
 local function setTarget(self, x, y)
     self._targetPath = AStar(self._x, self._y, x, y,
         Emet.Dungeon._tiles,
@@ -248,6 +356,8 @@ end
 local function Golem(x, y, name)
     local g = {
         _being = Being('Golem'),
+        _kind = 'Clay',
+        _upgrade = 0,
         _selectedBump = 'Maul',
         _selectedAction = nil,
         _emet = 0,
@@ -284,6 +394,8 @@ local function Golem(x, y, name)
         getStatuses = getStatuses,
         setStatuses = setStatuses,
         addStatuses = addStatuses,
+        getMissingStatuses = getMissingStatuses,
+        heal = heal,
         getStatusString = getStatusString,
         setDisplay = setDisplay,
         isDead = isDead,
@@ -299,6 +411,14 @@ local function Golem(x, y, name)
         getSpecial = getSpecial,
         setSpecial = setSpecial,
         getSpecialDesc = getSpecialDesc,
+
+        getKind = getKind,
+        setKind = setKind,
+        getUpgradeLevel = getUpgradeLevel,
+        setUpgradeLevel = setUpgradeLevel,
+        modUpgradeLevel = modUpgradeLevel,
+        getUpgrades = getUpgrades,
+        doUpgrade = doUpgrade,
 
         setTarget = setTarget,
         moveTo = moveTo,

@@ -5,24 +5,6 @@ local Emet = require 'Emet'
 local ActionTable = Emet.ActionTable
 local StatusTable = Emet.StatusTable
 
-local function deepcopy(object)
-    local lookup_table = {}
-    local function _copy(object)
-        if type(object) ~= "table" then
-            return object
-        elseif lookup_table[object] then
-            return lookup_table[object]
-        end
-        local new_table = {}
-        lookup_table[object] = new_table
-        for index, value in pairs(object) do
-            new_table[_copy(index)] = _copy(value)
-        end
-        return setmetatable(new_table, getmetatable(object))
-    end
-    return _copy(object)
-end
-
 local function peekStatus(self)
     return self._statuses[math.random(1, #self._statuses)]
 end
@@ -43,9 +25,9 @@ end
 
 local function heal(self, by)
     if not by then
-        self._statuses = deepcopy(self._max)
+        self._statuses = table.deepcopy(self._max)
     else
-        local missing = deepcopy(self._max)
+        local missing = table.deepcopy(self._max)
         for i=1, #self._statuses do
             for j=1, #missing do
                 if missing[j] == self._statuses[i] then
@@ -94,6 +76,7 @@ local function attack(self, defender, action)
         defender = defender, -- Current defender.
         action = ActionTable[action], -- Current action.
         ap = attacker._actions[action], -- Current AP.
+        base_ap = attacker._actions[action], -- This AP never changes.
         ap_used = 0,
 
         stop = nil, -- This will be a string containing the reason for the stop.
@@ -162,7 +145,7 @@ local function Being(nick, statuses)
         _desc = "",
         _kind = "golem",
         _actions = {["Maul"] = 1},
-        _max = deepcopy(statuses) or {"C", "C", "C", "C", "C"},
+        _max = table.deepcopy(statuses) or {"C", "C", "C", "C", "C"},
         _statuses = statuses or {"C", "C", "C", "C", "C"},
 
         peekStatus = peekStatus,

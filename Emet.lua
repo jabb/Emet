@@ -161,6 +161,36 @@ local ActionTable = {
             },
         },
     },
+    ['Expose'] = {
+        name = 'Expose',
+        desc = 'Exposes a weakness in the enemy.',
+        kind = 'bump',
+        triggerFirst = function(info)
+            local numW = info.defender:countStatusIcons('W')
+            for i=numW, info.base_ap - 1 do
+                info.defender:insertStatus('W')
+            end
+            info.stop = ''
+        end,
+        trigger = nil,
+        flavorTexts = {
+            ['health'] = {
+                '$attacker exposes $defender.'
+            },
+            ['armor'] = {
+                '$attacker exposes $defender.'
+            },
+            ['skill'] = {
+                '$attacker exposes $defender.'
+            },
+            ['magic'] = {
+                '$attacker exposes $defender.'
+            },
+            ['default'] = {
+                '$attacker exposes $defender.'
+            },
+        },
+    },
 }
 
 local function GenerateFlavorText(info)
@@ -175,7 +205,7 @@ local function GenerateFlavorText(info)
     if info.stop and info.stop ~= '' then
         flavor = string.gsub(info.stop, '%$(%w+)', repl)
         table.insert(str_table, flavor)
-    elseif #info.removed > 0 then
+    else
         local removed_table = {}
         local max = nil
 
@@ -191,7 +221,8 @@ local function GenerateFlavorText(info)
             if removed_table[v] > removed_table[max] then max = v end
         end
 
-        if ActionTable[info.action.name].flavorTexts[StatusTable[info.removed[1]].kind] then
+        if StatusTable[info.removed[1]] and StatusTable[info.removed[1]].kind and
+           ActionTable[info.action.name].flavorTexts[StatusTable[info.removed[1]].kind] then
             flavor = ActionTable[info.action.name].flavorTexts[StatusTable[info.removed[1]].kind][math.random(1, #ActionTable[info.action.name].flavorTexts[StatusTable[info.removed[1]].kind])]
         else
             flavor = ActionTable[info.action.name].flavorTexts['default'][math.random(1, #ActionTable[info.action.name].flavorTexts['default'])]
@@ -201,22 +232,24 @@ local function GenerateFlavorText(info)
             table.insert(str_table, flavor)
         end
 
-        flavor = StatusTable[max].flavorTexts[math.random(1, #StatusTable[max].flavorTexts)]
-        if flavor ~= '' then
-            flavor = string.gsub(flavor, '%$(%w+)', repl)
-            table.insert(str_table, flavor)
+        if max then
+            flavor = StatusTable[max].flavorTexts[math.random(1, #StatusTable[max].flavorTexts)]
+            if flavor ~= '' then
+                flavor = string.gsub(flavor, '%$(%w+)', repl)
+                table.insert(str_table, flavor)
+            end
         end
     end
 
     flavor = string.gsub('$defender loses $dmg health!', '%$(%w+)', repl)
     table.insert(str_table, flavor)
 
-    return table.concat(str_table, ' ')
+    return str_table
 end
 
 Emet = {
     ActionTable = ActionTable,
-    BumpActions = {'Pound', 'Maul'},
+    BumpActions = {'Pound', 'Maul', 'Expose'},
     SpecialActions = {},
     StatusTable = StatusTable,
     HealthStatuses = {'C', 'F', 'S', 'M'},
@@ -254,9 +287,15 @@ Emet = {
     MessengerWidth = 80,
     MessengerHeight = 4,
 
+    UpgradesX = 1,
+    UpgradesY = 1,
+    UpgradesWidth = 80,
+    UpgradesHeight = 24,
+
     Messenger = nil,
     Stats = nil,
     Info = nil,
+    Upgrades = nil,
 }
 
 return Emet
