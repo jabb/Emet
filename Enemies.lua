@@ -7,10 +7,18 @@ local Enemies
 
 local list = {}
 
+local function GenerateGolem()
+    local g = Golem(Emet.Dungeon:getRandomVacancy())
+    g:setStatuses({'C', 'C'})
+    g:setAction('Pound', 1)
+    g:setBump('Pound')
+    return g
+end
+
 local function generate(self, count)
     count = count or 5
     for i=1, count do
-        table.insert(list, Golem(Emet.Dungeon:getRandomVacancy()))
+        table.insert(list, GenerateGolem())
     end
 end
 

@@ -39,6 +39,7 @@ local function getNick(self) return self._being._nick end
 local function setNick(self, nick) self._being._nick = nick end
 
 local function getStatuses(self) return self._being._statuses end
+local function setStatuses(self, to) self._being._statuses = to end
 local function addStatuses(self, st, perm)
     if perm then
         if type(st) == 'table' then
@@ -281,6 +282,7 @@ local function Golem(x, y, name)
         getNick = getNick,
         setNick = setNick,
         getStatuses = getStatuses,
+        setStatuses = setStatuses,
         addStatuses = addStatuses,
         getStatusString = getStatusString,
         setDisplay = setDisplay,

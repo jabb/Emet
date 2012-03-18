@@ -60,13 +60,49 @@ local StatusTable = {
 }
 
 local ActionTable = {
+    ['Pound'] = {
+        name = 'Pound',
+        desc = 'A punch or jab.',
+        kind = 'bump',
+        triggerFirst = function(info)
+            local r = math.random()
+            if r <= 0.25 then
+                info.ap = info.ap * 2
+            elseif r <= 0.50 then
+                info.ap = 0
+            end
+        end,
+        trigger = nil,
+        flavorTexts = {
+            ['health'] = {
+                '$attacker punches $defender.',
+                '$attacker jabs $defender.'
+            },
+            ['armor'] = {
+                '$attacker punches $defender.',
+                '$attacker jabs $defender.'
+            },
+            ['skill'] = {
+                '$attacker punches $defender.',
+                '$attacker jabs $defender.'
+            },
+            ['magic'] = {
+                '$attacker punches $defender.',
+                '$attacker jabs $defender.'
+            },
+            ['default'] = {
+                '$attacker punches $defender.',
+                '$attacker jabs $defender.'
+            },
+        },
+    },
     ['Maul'] = {
         name = 'Maul',
         desc = 'A bludgeoning attack. Excellent against Clay.',
         kind = 'bump',
         triggerFirst = nil,
         trigger = function(info)
-            if math.random(1, 100) <= 25 and info.status.kind == 'health' then
+            if math.random() <= 0.25 and info.status.kind == 'health' then
                 info.forceRemove = true
             end
         end,
@@ -94,7 +130,7 @@ local function GenerateFlavorText(info)
     local str_table = {}
     local repl = {
         attacker = info.attacker._nick:gsub('(%w)([%w\']*)', function(f, r) return f:upper() .. r:lower() end),
-        defender = info.defender._nick,
+        defender = info.defender._nick:gsub('(%w)([%w\']*)', function(f, r) return f:upper() .. r:lower() end),
         dmg = info.dmg,
     }
     local flavor = nil

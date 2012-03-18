@@ -41,8 +41,6 @@ Emet.Enemies:generate()
 Emet.Player = Golem(Emet.Dungeon:getRandomVacancy())
 Emet.Player:setDisplay('@', curses.green, curses.underline)
 Emet.Player:setNick(os.getenv('USER') or string.match(os.tmpname(), '_(.*)'))
-Emet.Player:setAction('Maul', 5)
-Emet.Player:addStatuses({'C', 'C', 'C', 'C'}, true)
 
 Emet.Messenger = View(Emet.MessengerX, Emet.MessengerY, Emet.MessengerWidth, Emet.MessengerHeight)
 Emet.Stats = View(Emet.StatsX, Emet.StatsY, Emet.StatsWidth, Emet.StatsHeight)

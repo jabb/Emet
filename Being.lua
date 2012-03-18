@@ -94,6 +94,7 @@ local function attack(self, defender, action)
         defender = defender, -- Current defender.
         action = ActionTable[action], -- Current action.
         ap = attacker._actions[action], -- Current AP.
+        ap_used = 0,
 
         stop = nil, -- This will be a string containing the reason for the stop.
         status = nil, -- This is the current status being removed. Maybe.
@@ -119,11 +120,11 @@ local function attack(self, defender, action)
         end
         if info.stop then return info end
 
-        if info.forceRemove or info.ap >= info.status.absorbs then
+        if info.forceRemove or (info.ap - info.ap_used) >= info.status.absorbs then
 
             -- Not a forced remove, but an AP remove.
-            if not info.forceRemove and info.ap >= info.status.absorbs then
-                info.ap = info.ap - info.status.absorbs
+            if not info.forceRemove and (info.ap - info.ap_used) >= info.status.absorbs then
+                info.ap_used = info.ap_used + info.status.absorbs
             end
             defender:removeStatus(info.status.icon)
 
