@@ -8,9 +8,10 @@ local Being = require 'Being'
 local Upgrades = {
     First = {
         {
-            desc = 'Stay a Clay Golem. +1 to Maul.',
+            desc = 'Stay a Clay Golem. (+1 to Maul)',
             emet = 0,
             met = 1,
+            can = function(golem) return true end,
             apply = function(golem)
                 golem:modAction('Maul', 1)
                 golem:modUpgradeLevel(1)
@@ -18,9 +19,10 @@ local Upgrades = {
             end
         },
         {
-            desc = 'Turn into a Flesh Golem. All C tokens become F tokens.',
+            desc = 'Turn into a Flesh Golem. (All C tokens become F tokens)',
             emet = 0,
             met = 1,
+            can = function(golem) return true end,
             apply = function(golem)
                 golem:setKind('Flesh')
                 golem:setStatuses({'F', 'F', 'F', 'F', 'F'}, true)
@@ -29,9 +31,10 @@ local Upgrades = {
             end
         },
         {
-            desc = 'Turn into a Stone Golem. All C tokens become S tokens.',
+            desc = 'Turn into a Stone Golem. (All C tokens become S tokens)',
             emet = 0,
             met = 1,
+            can = function(golem) return true end,
             apply = function(golem)
                 golem:setKind('Stone')
                 golem:setStatuses({'S', 'S', 'S', 'S', 'S'}, true)
@@ -40,9 +43,10 @@ local Upgrades = {
             end
         },
         {
-            desc = 'Turn into a Metal Golem. All C tokens become M tokens.',
+            desc = 'Turn into a Metal Golem. (All C tokens become M tokens)',
             emet = 0,
             met = 1,
+            can = function(golem) return true end,
             apply = function(golem)
                 golem:setKind('Metal')
                 golem:setStatuses({'M', 'M', 'M', 'M', 'M'}, true)
@@ -52,16 +56,53 @@ local Upgrades = {
         },
     },
     Clay = {
-
+        -- Tier 1
+        {
+            {
+                desc = 'Solid clay. (+2 C Tokens; +1 to Maul)',
+                emet = 0,
+                met = 1,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:addStatuses({'C', 'C'}, true)
+                    golem:modAction('Maul', 1)
+                    golem:modUpgradeLevel(1)
+                    Emet.Messenger:message('You feel more powerful!')
+                end
+            },
+            {
+                desc = 'Wet clay. (Aquire the Rust action)',
+                emet = 0,
+                met = 1,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:setAction('Rust', 1)
+                    golem:modUpgradeLevel(1)
+                    Emet.Messenger:message('You are dripping!')
+                end
+            },
+            {
+                desc = 'Hard clay. (+4 C Tokens)',
+                emet = 0,
+                met = 1,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:addStatuses({'C', 'C', 'C', 'C'}, true)
+                    golem:modUpgradeLevel(1)
+                    Emet.Messenger:message('You feel invulnerable!')
+                end
+            },
+        },
+        -- Tier 2
     },
     Flesh = {
-
+        -- Tier 1
     },
     Stone = {
-
+        -- Tier 1
     },
     Metal = {
-
+        -- Tier 1
     }
 }
 
@@ -280,8 +321,12 @@ local function getUpgrades(self)
     end
 end
 
+local function canUpgrade(self, num)
+    return self:getUpgrades()[num].can(self)
+end
+
 local function doUpgrade(self, num)
-    self:getUpgrades()[num].apply(self)
+    return self:getUpgrades()[num].apply(self)
 end
 
 local function setTarget(self, x, y)
@@ -418,6 +463,7 @@ local function Golem(x, y, name)
         setUpgradeLevel = setUpgradeLevel,
         modUpgradeLevel = modUpgradeLevel,
         getUpgrades = getUpgrades,
+        canUpgrade = canUpgrade,
         doUpgrade = doUpgrade,
 
         setTarget = setTarget,

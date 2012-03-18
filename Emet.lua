@@ -191,6 +191,36 @@ local ActionTable = {
             },
         },
     },
+    ['Rust'] = {
+        name = 'Rust',
+        desc = 'Drenches the enemy in water. (Good against Metal and Armor)',
+        kind = 'bump',
+        triggerFirst = function(info)
+            if info.status.icon == 'M' or info.status.kind == 'Armor' then
+                info.ap = info.ap * 2
+            else
+                info.ap = math.ceil(info.ap / 2)
+            end
+        end,
+        trigger = nil,
+        flavorTexts = {
+            ['health'] = {
+                '$attacker drenches $defender.'
+            },
+            ['armor'] = {
+                '$attacker drenches $defender.'
+            },
+            ['skill'] = {
+                '$attacker drenches $defender.'
+            },
+            ['magic'] = {
+                '$attacker drenches $defender.'
+            },
+            ['default'] = {
+                '$attacker drenches $defender.'
+            },
+        },
+    },
 }
 
 local function GenerateFlavorText(info)

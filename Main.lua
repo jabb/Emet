@@ -80,7 +80,7 @@ Emet.Stats:print(1, 4, 'DLVL: %s' % Emet.Dungeon:getDungeonLevel())
 Emet.Stats:print(1, 5, 'Score: %s' % Emet.PlayerScore)
 
 Emet.Stats:print(1, 7, 'Actions')
-Emet.Stats:print(1, 8, '1: %s' % Emet.Player:getBump())
+Emet.Stats:print(1, 8, '%s (%d)' % {Emet.Player:getBump(), Emet.Player:getAction(Emet.Player:getBump())})
 --Emet.Stats:print(1, 9, '2: %s' % Emet.Player:getSpecial())
 
 Emet.Dungeon:render(Emet.DungeonX, Emet.DungeonY)
@@ -106,13 +106,13 @@ while true do
         Emet.Player:bump(Emet.Player:getX() + dx, Emet.Player:getY() + dy)
     elseif moved then
         local tile = Emet.Dungeon:tileAt(Emet.Player:getPosition())
-        if tile.emet then
+        if tile.emet and tile.emet > 0 then
             Emet.Messenger:message('You picked up %d Emet!' % tile.emet)
             Emet.Player:modEmet(tile.emet)
             tile.emet = nil
         end
 
-        if tile.met then
+        if tile.met and tile.met > 0 then
             Emet.Messenger:message('You picked up %d Met!' % tile.met)
             Emet.Player:modMet(tile.met)
             tile.met = nil
@@ -155,8 +155,8 @@ while true do
         Emet.Upgrades:message('Upgrades (To select press a-z; To quit press anything else)')
         Emet.Upgrades:message('Emet/Met: %d/%d' % {Emet.Player:getEmet(), Emet.Player:getMet()})
         Emet.Upgrades:message(('-'):rep(Emet.UpgradesWidth))
-        Emet.Upgrades:message('a - Heal One (1 Emet; 0 Met)')
-        Emet.Upgrades:message('b - Heal Max (%d Emet; 0 Met)' % (Emet.Dungeon:getDungeonLevel() + 1))
+        Emet.Upgrades:message('a - Heal 10%% (1 Emet; 0 Met)')
+        Emet.Upgrades:message('b - Heal 50%% (5 Emet; 0 Met)')
         Emet.Upgrades:message('')
 
         local selected = nil
@@ -164,20 +164,22 @@ while true do
         local upgrades = Emet.Player:getUpgrades()
         if upgrades then
             for i=1, #upgrades do
-                Emet.Upgrades:message('%s - %s (%d Emet; %d Met)' % {
-                    string.char(start + i - 1), upgrades[i].desc, upgrades[i].emet, upgrades[i].met
-                })
+                if Emet.Player:canUpgrade(i) then
+                    Emet.Upgrades:message('%s - %s (%d Emet; %d Met)' % {
+                        string.char(start + i - 1), upgrades[i].desc, upgrades[i].emet, upgrades[i].met
+                    })
+                end
             end
 
             local input = Emet.Upgrades:input()
-            if input == 'a' and Emet.Player:getEmet() > 0 then
+            if input == 'a' and Emet.Player:getEmet() >= 1 then
                 Emet.Player:modEmet(-1)
-                Emet.Player:heal(1)
+                Emet.Player:heal(math.floor(Emet.Player:getStatusesMissing() * 0.1))
                 Emet.Messenger:message('You feel refreshed!')
                 moved = true
-            elseif input == 'b' and Emet.Player:getEmet() >= Emet.Dungeon:getDungeonLevel() + 1 then
-                Emet.Player:modEmet(-(Emet.Dungeon:getDungeonLevel() + 1))
-                Emet.Player:heal(Emet.Dungeon:getDungeonLevel() + 1)
+            elseif input == 'b' and Emet.Player:getEmet() >= 5 then
+                Emet.Player:modEmet(-5)
+                Emet.Player:heal(math.floor(Emet.Player:getStatusesMissing() * 0.5))
                 Emet.Messenger:message('You feel refreshed!')
                 moved = true
             end
@@ -190,14 +192,14 @@ while true do
             end
         else
             local input = Emet.Upgrades:input()
-            if input == 'a' and Emet.Player:getEmet() > 0 then
+            if input == 'a' and Emet.Player:getEmet() >= 1 then
                 Emet.Player:modEmet(-1)
-                Emet.Player:heal(1)
+                Emet.Player:heal(math.floor(Emet.Player:getStatusesMissing() * 0.1))
                 Emet.Messenger:message('You feel refreshed!')
                 moved = true
-            elseif input == 'b' and Emet.Player:getEmet() >= Emet.Dungeon:getDungeonLevel() + 1 then
-                Emet.Player:modEmet(-(Emet.Dungeon:getDungeonLevel() + 1))
-                Emet.Player:heal(Emet.Dungeon:getDungeonLevel() + 1)
+            elseif input == 'b' and Emet.Player:getEmet() >= 5 then
+                Emet.Player:modEmet(-5)
+                Emet.Player:heal(math.floor(Emet.Player:getStatusesMissing() * 0.5))
                 Emet.Messenger:message('You feel refreshed!')
                 moved = true
             end
@@ -226,7 +228,7 @@ while true do
     Emet.Stats:print(1, 5, 'Score: %s' % Emet.PlayerScore)
 
     Emet.Stats:print(1, 7, 'Actions')
-    Emet.Stats:print(1, 8, '1: %s' % Emet.Player:getBump())
+    Emet.Stats:print(1, 8, '1: %s (%d)' % {Emet.Player:getBump(), Emet.Player:getAction(Emet.Player:getBump())})
     --Emet.Stats:print(1, 9, '2: %s' % Emet.Player:getSpecial())
 
     Emet.Info:clear()

@@ -23,7 +23,11 @@ end
 
 local function print(self, x, y, str, ...)
     curses.move(self._x + x - 1, self._y + y - 1)
-    curses.print((str % {...}):sub(1, self._width))
+    if #{...} > 0 then
+        curses.print((str % {...}):sub(1, self._width))
+    else
+        curses.print(str:sub(1, self._width))
+    end
 end
 
 local function message(self, str, ...)
