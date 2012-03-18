@@ -9,9 +9,32 @@ local list = {}
 
 local function GenerateGolem()
     local g = Golem(Emet.Dungeon:getRandomVacancy())
-    g:setStatuses({'C', 'C'})
-    g:setAction('Pound', 1)
-    g:setBump('Pound')
+    local base = Emet.HealthStatuses[math.random(#Emet.HealthStatuses)]
+    local numStatuses = Emet.Dungeon:getDungeonLevel() + 1
+    local action = Emet.BumpActions[math.random(#Emet.BumpActions)]
+
+    -- Add base statuses.
+    local statuses = {}
+    for i=1, math.floor(numStatuses / 2) do
+        table.insert(statuses, base)
+    end
+
+    -- Add extra statuses.
+    local statusTypes = {
+        Emet.HealthStatuses, Emet.ArmorStatuses,
+        Emet.SkillStatuses, Emet.SpecialStatuses,
+        nil
+    }
+    local statusType = statusTypes[math.random(#statusTypes)]
+    local status = statusType[math.random(#statusType)]
+
+    for i=1, math.floor(numStatuses / 2) do
+        table.insert(statuses, status)
+    end
+
+    g:setStatuses(statuses)
+    g:setAction(action, math.ceil(Emet.Dungeon:getDungeonLevel() / 2))
+    g:setBump(action)
     return g
 end
 

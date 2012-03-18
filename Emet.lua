@@ -1,6 +1,7 @@
 #!/usr/bin/luajit
 
 local StatusTable = {
+    -- Health
     ['C'] = {
         icon = 'C',
         name = 'Clay',
@@ -57,6 +58,42 @@ local StatusTable = {
             '$defender clinks.',
         },
     },
+    -- Armor
+
+    -- Skills
+    ['D'] = {
+        icon = 'D',
+        name = 'Dodge',
+        desc = 'Dodges an attack.',
+        kind = 'skill',
+        absorbs = 0,
+        triggerFirst = function(info)
+            info.stop = '$defender dodged!'
+        end,
+        triggerLast = nil,
+        trigger = nil,
+        flavorTexts = {
+            '',
+        },
+    },
+    -- Magic
+
+    -- Special
+    ['W'] = {
+        icon = 'W',
+        name = 'Weakness',
+        desc = 'A vulnerability.',
+        kind = 'special',
+        absorbs = 0,
+        triggerFirst = function(info)
+            info.ap = info.ap * 2
+        end,
+        triggerLast = nil,
+        trigger = nil,
+        flavorTexts = {
+            '$attacker exposes a weakness!',
+        },
+    },
 }
 
 local ActionTable = {
@@ -102,7 +139,7 @@ local ActionTable = {
         kind = 'bump',
         triggerFirst = nil,
         trigger = function(info)
-            if math.random() <= 0.25 and info.status.kind == 'health' then
+            if math.random() <= 0.10 and info.status.kind == 'health' then
                 info.forceRemove = true
             end
         end,
@@ -179,7 +216,13 @@ end
 
 Emet = {
     ActionTable = ActionTable,
+    BumpActions = {'Pound', 'Maul'},
+    SpecialActions = {},
     StatusTable = StatusTable,
+    HealthStatuses = {'C', 'F', 'S', 'M'},
+    ArmorStatuses = {},
+    SkillStatuses = {'D'},
+    SpecialStatuses = {'W'},
 
     GenerateFlavorText = GenerateFlavorText,
 
