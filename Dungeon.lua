@@ -169,8 +169,9 @@ local function inBounds(self, x, y)
     return x >= 1 and x <= self:getWidth() and y >= 1 and y <= self:getHeight()
 end
 
-local function canSee(self, sx, sy, ex, ey)
-    return CanSee(sx, sy, ex, ey, 10, self._tiles, function(t)
+local function canSee(self, sx, sy, ex, ey, range)
+    range = range or 10
+    return CanSee(sx, sy, ex, ey, range, self._tiles, function(t)
         return t.blocksSight
     end)
 end
@@ -254,7 +255,7 @@ local function render(self, x, y)
     y = y or 1
     local px, py = Emet.Player:getPosition()
     for dx,dy,t in self:traverse() do
-        if self:canSee(px, py, dx, dy) then
+        if self:canSee(px, py, dx, dy, Emet.Player:getSight()) then
             t.visited = true
             if t.golem then
                 t.golem:render(dx + x - 1, dy + y - 1)

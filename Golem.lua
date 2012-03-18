@@ -27,12 +27,37 @@ local function getMet(self) return self._met end
 local function setMet(self, to) self._met = to end
 local function modMet(self, by) self:setMet(self._met + by) end
 
+local function getSight(self) return self._sight end
+local function setSight(self, to) self._sight = to end
+local function modSight(self, by) self:setSight(self._sight + by) end
+
 local function getX(self) return self._x end
 local function getY(self) return self._y end
 local function getPosition(self) return self._x, self._y end
 
 local function getNick(self) return self._being._nick end
 local function setNick(self, nick) self._being._nick = nick end
+
+local function getStatuses(self) return self._being._statuses end
+local function addStatuses(self, st, perm)
+    if perm then
+        if type(st) == 'table' then
+            for i=1, #st do
+                table.insert(self._being._max, st[i])
+            end
+        elseif type(st) == 'string' then
+            table.insert(self._being._max, st)
+        end
+    end
+
+    if type(st) == 'table' then
+        for i=1, #st do
+            table.insert(self._being._statuses, st[i])
+        end
+    elseif type(st) == 'string' then
+        table.insert(self._being._statuses, st)
+    end
+end
 
 local function getStatusString(self)
     return table.concat(self._being._statuses, '')
@@ -71,7 +96,7 @@ local function cycleBump(self)
     local i = 1
     while true do
         local done = false
-        if bumps[i] == self._selectedBump then
+        if bumps[i] or bumps[i] == self._selectedBump then
             done = true
         end
 
@@ -90,6 +115,10 @@ end
 
 local function getBump(self)
     return self._selectedBump or ''
+end
+
+local function setBump(self, to)
+    self._selectedBump = to
 end
 
 local function getBumpDesc(self)
@@ -113,7 +142,7 @@ local function cycleSpecial(self)
     local i = 1
     while true do
         local done = false
-        if specials[i] == self._selectedSpecial then
+        if specials[i] or specials[i] == self._selectedSpecial then
             done = true
         end
 
@@ -132,6 +161,10 @@ end
 
 local function getSpecial(self)
     return self._selectedSpecial or ''
+end
+
+local function setSpecial(self, to)
+    self._selectedSpecial = to
 end
 
 local function getSpecialDesc(self)
@@ -222,6 +255,7 @@ local function Golem(x, y, name)
         _symbol = '@',
         _color = curses.red,
         _attributes = {},
+        _sight = 10,
         _x = x,
         _y = y,
 
@@ -237,12 +271,17 @@ local function Golem(x, y, name)
         getMet = getMet,
         setMet = setMet,
         modMet = modMet,
+        getSight = getSight,
+        setSight = setSight,
+        modSight = modSight,
 
         getX = getX,
         getY = getY,
         getPosition = getPosition,
         getNick = getNick,
         setNick = setNick,
+        getStatuses = getStatuses,
+        addStatuses = addStatuses,
         getStatusString = getStatusString,
         setDisplay = setDisplay,
         isDead = isDead,
@@ -252,9 +291,11 @@ local function Golem(x, y, name)
         modAction = modAction,
         cycleBump = cycleBump,
         getBump = getBump,
+        setBump = setBump,
         getBumpDesc = getBumpDesc,
         cycleSpecial = cycleSpecial,
         getSpecial = getSpecial,
+        setSpecial = setSpecial,
         getSpecialDesc = getSpecialDesc,
 
         setTarget = setTarget,

@@ -25,12 +25,13 @@ local function update(self, player)
     for i=#list, 1, -1 do
         if list[i]:isDead() then
             Emet.Dungeon:tileAt(list[i]:getPosition()).golem = nil
+            Emet.Messenger:message('You killed %s!' % list[i]:getNick())
             Emet.Dungeon:tileAt(list[i]:getPosition()).emet = math.random(0, 1)
             table.remove(list, i)
         else
             local gx, gy = list[i]:getPosition()
             local px, py = player:getPosition()
-            if Emet.Dungeon:canSee(gx, gy, px, py) then
+            if Emet.Dungeon:canSee(gx, gy, px, py, list[i]:getSight()) then
                 list[i]:setTarget(px, py)
             end
 
