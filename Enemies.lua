@@ -1,5 +1,6 @@
 #!/usr/bin/luajit
 
+local curses = require 'curses'
 local Golem = require 'Golem'
 local Emet = require 'Emet'
 
@@ -13,10 +14,10 @@ local function GenerateGolem()
     local numStatuses = Emet.Dungeon:getDungeonLevel() + 1
     local action = Emet.BumpActions[math.random(#Emet.BumpActions)]
 
-    if base == 'C' then g:setNick('Clay Golem') end
-    if base == 'F' then g:setNick('Flesh Golem') end
-    if base == 'S' then g:setNick('Stone Golem') end
-    if base == 'M' then g:setNick('Metal Golem') end
+    if base == 'C' then g:setNick('Clay Golem'); g:setDisplay('@', curses.yellow) end
+    if base == 'F' then g:setNick('Flesh Golem'); g:setDisplay('@', curses.red) end
+    if base == 'S' then g:setNick('Stone Golem'); g:setDisplay('@', curses.magenta) end
+    if base == 'M' then g:setNick('Metal Golem'); g:setDisplay('@', curses.white) end
 
     -- Add base statuses.
     local statuses = {}

@@ -1,7 +1,7 @@
 #!/usr/bin/luajit
 
 local ffi = require 'ffi'
-local ncurses = ffi.load 'ncurses'
+local ncurses = ffi.load 'ncursesw'
 
 ffi.cdef [[
 
