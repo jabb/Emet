@@ -9,6 +9,8 @@ In Emet you control a golem. This golem starts off as a standard clay golem, and
   * **Stone** - This type of golem specializes in tokens that pull off tricks like dodging and countering. Stone golems are good against flesh golems.
   * **Metal** - The hardiest. This type of golem specializes in a lot of health tokens and strong, consistent attacks. Metal golems are good against stone golems.
 
+The goal of the game (roughly) is to get the highest score before dying. Currently the only way to gain score is by descending deeper.
+
 ## Controls
 
 By default these are the controls, but you can change them at anytime (knowing a bit of Lua would help) in Keybindings.lua:
@@ -48,3 +50,13 @@ By default these are the controls, but you can change them at anytime (knowing a
     a - Cycle bump action.
 
     @ - Upgrades.
+
+## Enemies
+
+Enemies in Emet are other golems like yourself. They progressively get harder as you descend further down the dungeons. You can quickly identify the type of golem by it's color. Yellow is clay, red is flesh, magenta is stone and white is metal. You'll see a list of visible golems, as well as their tokens, on the bottom right panel when you play.
+
+## Emet/met and Upgrades
+
+In Emet you can upgrade your golem, you do so by pressing the '@' key (by default). To upgrade you need emet or met (or both). There is only one met per level, and it's a red asterisk, but there are is a lot of emet, and occasionally an enemy will drop some. Met is special in that it's always necessary for permanent upgrades.
+
+At first you will have to choose a path: Clay, flesh, stone or metal. But then you'll get choices for upgrades in your chosen path.
