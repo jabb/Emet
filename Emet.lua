@@ -183,10 +183,10 @@ local ActionTable = {
     },
     ['Rust'] = {
         name = 'Rust',
-        desc = 'Drenches the enemy in water. (Good against Metal and Armor)',
+        desc = 'Drenches the enemy in water. (Good against Metal)',
         kind = 'bump',
         triggerFirst = function(info)
-            if info.status.icon == 'M' or info.status.kind == 'Armor' then
+            if info.status.icon == 'M' then
                 info.ap = info.ap * 2
             else
                 info.ap = math.ceil(info.ap / 2)
@@ -209,11 +209,11 @@ local ActionTable = {
         },
     },
     ['Slash'] = {
-        name = 'Rust',
-        desc = 'Drenches the enemy in water. (Good against Metal and Armor)',
+        name = 'Slash',
+        desc = 'Slashes the enemy. (Good against Flesh)',
         kind = 'bump',
         triggerFirst = function(info)
-            if info.status.icon == 'M' or info.status.kind == 'Armor' then
+            if info.status.icon == 'F' then
                 info.ap = info.ap * 2
             else
                 info.ap = math.ceil(info.ap / 2)
@@ -222,25 +222,25 @@ local ActionTable = {
         trigger = nil,
         flavorTexts = {
             ['health'] = {
-                '$attacker drenches $defender.'
+                '$attacker slashes $defender.'
             },
             ['armor'] = {
-                '$attacker drenches $defender.'
+                '$attacker slashes $defender.'
             },
             ['skill'] = {
-                '$attacker drenches $defender.'
+                '$attacker slashes $defender.'
             },
             ['default'] = {
-                '$attacker drenches $defender.'
+                '$attacker slashes $defender.'
             },
         },
     },
     ['Bludgeon'] = {
-        name = 'Rust',
-        desc = 'Drenches the enemy in water. (Good against Metal and Armor)',
+        name = 'Bludgeon',
+        desc = 'Bludgeons an enemy. (Good against Stone)',
         kind = 'bump',
         triggerFirst = function(info)
-            if info.status.icon == 'M' or info.status.kind == 'Armor' then
+            if info.status.icon == 'S' then
                 info.ap = info.ap * 2
             else
                 info.ap = math.ceil(info.ap / 2)
@@ -249,16 +249,16 @@ local ActionTable = {
         trigger = nil,
         flavorTexts = {
             ['health'] = {
-                '$attacker drenches $defender.'
+                '$attacker bashes $defender.'
             },
             ['armor'] = {
-                '$attacker drenches $defender.'
+                '$attacker bashes $defender.'
             },
             ['skill'] = {
-                '$attacker drenches $defender.'
+                '$attacker bashes $defender.'
             },
             ['default'] = {
-                '$attacker drenches $defender.'
+                '$attacker bashes $defender.'
             },
         },
     },
@@ -320,7 +320,7 @@ end
 
 Emet = {
     ActionTable = ActionTable,
-    BumpActions = {'Pound', 'Maul', 'Expose'},
+    BumpActions = {'Pound', 'Maul', 'Expose', 'Rust', 'Slash', 'Bludgeon'},
     SpecialActions = {},
     StatusTable = StatusTable,
     HealthStatuses = {'C', 'F', 'S', 'M'},

@@ -54,7 +54,7 @@ local Upgrades = {
         -- Tier 1
         {
             {
-                desc = 'Baked clay. (+2 C Tokens)',
+                desc = 'Glazed clay. (+2 C Tokens)',
                 emet = 0,
                 met = 1,
                 can = function(golem) return true end,
@@ -84,7 +84,7 @@ local Upgrades = {
                 end
             },
             {
-                desc = 'Hard clay. (Aquire the Bludgeon action)',
+                desc = 'Thick clay. (Aquire the Bludgeon action)',
                 emet = 0,
                 met = 1,
                 can = function(golem) return true end,
@@ -112,9 +112,7 @@ local Upgrades = {
                 met = 2,
                 can = function(golem) return true end,
                 apply = function(golem)
-                    if golem:getAction('Maul') then
-                        golem:modAction('Maul', 1)
-                    end
+                    golem:modAction('Maul', 1)
                     if golem:getAction('Rust') then
                         golem:modAction('Rust', 1)
                     end
@@ -150,6 +148,31 @@ local Upgrades = {
                 apply = function(golem)
                     golem:setAction('Rust', 1)
                     Emet.Messenger:message('You are dripping!')
+                end
+            },
+        },
+        -- Tier 2
+        {
+            {
+                desc = 'Callus. (+4 F Tokens)',
+                emet = 0,
+                met = 2,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:addStatuses({'F', 'F'}, true)
+                    Emet.Messenger:message('Your skin hardens!')
+                end
+            },
+            {
+                desc = 'Gelatinous. (+1 to Maul; +2 to Rust)',
+                emet = 0,
+                met = 2,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    if golem:getAction('Rust') then
+                        golem:setAction('Rust', 2)
+                    end
+                    Emet.Messenger:message('You are oozing!')
                 end
             },
         },
