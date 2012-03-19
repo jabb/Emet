@@ -64,6 +64,20 @@ By default these are the controls, but you can change them at anytime (knowing a
 
 Enemies in Emet are other golems like yourself. They progressively get harder as you descend further down the dungeons. You can quickly identify the type of golem by it's color. Yellow is clay, red is flesh, magenta is stone and white is metal. You'll see a list of visible golems, as well as their tokens, on the bottom right panel when you play.
 
+## Combat
+
+Combat is revolved around tokens. The number of cool things that can be done with tokens is almost limitless. To start, an attack has an associated number to it, this number typically indicated the number of tokens that will be removed in the event of an attack. `Maul (2)`, for example will try to remove 2 tokens. When a token is removed, it is removed at random. A token has a few "triggers." A token can have a trigger for when it's the first token removed, one of the middle tokens, or the last token. The dodge token, for example, when removed first averts the entire attack, however it's one of the few tokens that don't defend if removed in the middle, so if it's not removed first, an attack can sweep through a lot of dodge tokens.
+
+Current list of tokens:
+
+  * **C (Clay)** - This token has no effects.
+  * **F (Flesh)** - This token has no effects.
+  * **S (Stone)** - This token has no effects.
+  * **M (Metal)** - This token has no effects.
+  * **D (Dodge)** - When removed first, the attack is averted. Blocks 0 attack.
+  * **W (Weakness)** - When removed first, the attack strength is doubled.
+  * **A (Acid)** - When removed (anytime), the attack strength is increased 50%.
+
 ## Emet/met and Upgrades
 
 In Emet you can upgrade your golem, you do so by pressing the '@' key (by default). To upgrade you need emet or met (or both). There is only one met per level, and it's a red asterisk, but there are is a lot of emet, and occasionally an enemy will drop some. Met is special in that it's always necessary for permanent upgrades.
