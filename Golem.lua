@@ -8,12 +8,11 @@ local Being = require 'Being'
 local Upgrades = {
     First = {
         {
-            desc = 'Stay a Clay Golem. (+1 to Maul)',
+            desc = 'Stay a Clay Golem.',
             emet = 0,
             met = 1,
             can = function(golem) return true end,
             apply = function(golem)
-                golem:modAction('Maul', 1)
                 Emet.Messenger:message('You are permanently a Clay Golem!')
             end
         },
@@ -55,24 +54,13 @@ local Upgrades = {
         -- Tier 1
         {
             {
-                desc = 'Solid clay. (+2 C Tokens; +1 to Maul)',
+                desc = 'Solid clay. (+2 C Tokens)',
                 emet = 0,
                 met = 1,
                 can = function(golem) return true end,
                 apply = function(golem)
                     golem:addStatuses({'C', 'C'}, true)
-                    golem:modAction('Maul', 1)
-                    Emet.Messenger:message('You feel more powerful!')
-                end
-            },
-            {
-                desc = 'Hard clay. (+4 C Tokens)',
-                emet = 0,
-                met = 1,
-                can = function(golem) return true end,
-                apply = function(golem)
-                    golem:addStatuses({'C', 'C', 'C', 'C'}, true)
-                    Emet.Messenger:message('You feel invulnerable!')
+                    Emet.Messenger:message('Your clay hardens!')
                 end
             },
             {
@@ -115,9 +103,53 @@ local Upgrades = {
     },
     Stone = {
         -- Tier 1
+        {
+            {
+                desc = 'Granite skin. (+2 S Tokens)',
+                emet = 0,
+                met = 1,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:addStatuses({'S', 'S'}, true)
+                    Emet.Messenger:message('Your stone hardens!')
+                end
+            },
+            {
+                desc = 'Sharp rocks. (Aquire the Slashing action)',
+                emet = 0,
+                met = 1,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:setAction('Slash', 1)
+                    Emet.Messenger:message('Your arms transform into sharp blades!')
+                end
+            },
+        },
     },
     Metal = {
         -- Tier 1
+        {
+            {
+                desc = 'Steel frame. (+2 M Tokens)',
+                emet = 0,
+                met = 1,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:addStatuses({'M', 'M'}, true)
+                    Emet.Messenger:message('Your skin hardens!')
+                end
+            },
+            {
+                desc = 'Mace fists. (Aquire the Bludgeon action)',
+                emet = 0,
+                met = 1,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:setAction('Bludgeon', 1)
+                    Emet.Messenger:message('Your arms mold into giant spiked spheres!')
+                end
+            },
+        },
     }
 }
 
@@ -342,8 +374,8 @@ end
 
 local function doUpgrade(self, num)
     if self:canUpgrade(num) then
-        golem:modUpgradeLevel(1)
-        return self:getUpgrades()[num].apply(self)
+        self:getUpgrades()[num].apply(self)
+        self:modUpgradeLevel(1)
     end
 end
 

@@ -59,6 +59,7 @@ Emet.Enemies:generate()
 Emet.Player = Golem(Emet.Dungeon:getRandomVacancy())
 Emet.Player:setDisplay('@', curses.green, curses.underline)
 Emet.Player:setNick(os.getenv('USER') or string.match(os.tmpname(), '_(.*)'))
+Emet.Player:modMet(1)
 
 Emet.Messenger = View(Emet.MessengerX, Emet.MessengerY, Emet.MessengerWidth, Emet.MessengerHeight)
 Emet.Stats = View(Emet.StatsX, Emet.StatsY, Emet.StatsWidth, Emet.StatsHeight)
@@ -209,6 +210,8 @@ while true do
 
         if selected and upgrades[selected].emet <= Emet.Player:getEmet() and upgrades[selected].met <= Emet.Player:getMet() then
             Emet.Player:doUpgrade(selected)
+            Emet.Player:modEmet(-upgrades[selected].emet)
+            Emet.Player:modMet(-upgrades[selected].met)
         elseif selected then
             Emet.Messenger:message('You do not have enough Emet/Met for that!')
         end
