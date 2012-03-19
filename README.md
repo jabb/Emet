@@ -13,38 +13,38 @@ In Emet you control a golem. This golem starts off as a standard clay golem, and
 
 By default these are the controls, but you can change them at anytime (knowing a bit of Lua would help) in Keybindings.lua:
 
-*Q* - Quit.
+    **Q** - Quit.
 
-*k* - Move up.
-*j* - Move Down.
-*h* - Move Left.
-*l* - Move Right.
+    **k** - Move up.
+    **j** - Move Down.
+    **h** - Move Left.
+    **l** - Move Right.
 
-*y* - Move Up-left.
-*u* - Move Up-right.
-*b* - Move Down-left.
-*n* - Move Down-right.
+    **y** - Move Up-left.
+    **u** - Move Up-right.
+    **b** - Move Down-left.
+    **n** - Move Down-right.
 
-*.* - Wait.
+    **.** - Wait.
 
-*1* - Move down-left.
-*2* - Move down.
-*3* - Move down-right.
-*4* - Move left.
-*6* - Move right.
-*7* - Move up-left.
-*8* - Move up.
-*9* - Move up-right.
-*5* - Wait.
+    **1** - Move down-left.
+    **2** - Move down.
+    **3** - Move down-right.
+    **4** - Move left.
+    **6** - Move right.
+    **7** - Move up-left.
+    **8** - Move up.
+    **9** - Move up-right.
+    **5** - Wait.
 
-*up* = Move up.
-*down* = Move down.
-*left* = Move left.
-*right* = Move right.
+    **up** = Move up.
+    **down** = Move down.
+    **left** = Move left.
+    **right** = Move right.
 
-*enter* = Activate.
-*space* - Activate.
+    **enter** = Activate.
+    **space** - Activate.
 
-*a* - Cycle bump action.
+    **a** - Cycle bump action.
 
-*@* - Upgrades.
+    **@** - Upgrades.
