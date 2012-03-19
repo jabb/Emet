@@ -176,6 +176,16 @@ local Upgrades = {
                     Emet.Messenger:message('You are oozing!')
                 end
             },
+            {
+                desc = 'Acid. (Aquire the Acid (2) action)',
+                emet = 0,
+                met = 2,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:setAction('Acid', 2)
+                    Emet.Messenger:message('You start to bubble!')
+                end
+            },
         },
     },
     Stone = {
@@ -227,6 +237,16 @@ local Upgrades = {
                     Emet.Messenger:message('You arms are sharper than razorblades!')
                 end
             },
+            {
+                desc = 'Speedy. (+4 D Tokens)',
+                emet = 0,
+                met = 2,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:addStatuses({'D', 'D', 'D', 'D'}, true)
+                    Emet.Messenger:message('You are nimbler than the nimblest gnome!')
+                end
+            },
         },
     },
     Metal = {
@@ -256,24 +276,24 @@ local Upgrades = {
         -- Tier 2
         {
             {
-                desc = 'Spider silk shell. (+4 M Tokens)',
+                desc = 'Spider silk shell. (+6 M Tokens)',
                 emet = 0,
                 met = 2,
                 can = function(golem) return true end,
                 apply = function(golem)
-                    golem:addStatuses({'M', 'M', 'M', 'M'}, true)
+                    golem:addStatuses({'M', 'M', 'M', 'M', 'M', 'M'}, true)
                     Emet.Messenger:message('Your skin hardens!')
                 end
             },
             {
-                desc = 'Heavy arms. (+1 to Maul; +2 to Bludgeon)',
+                desc = 'Heavy arms. (+2 to Maul; +3 to Bludgeon)',
                 emet = 0,
                 met = 2,
                 can = function(golem) return true end,
                 apply = function(golem)
-                    golem:modAction('Maul', 1)
+                    golem:modAction('Maul', 2)
                     if golem:getAction('Bludgeon') then
-                        golem:setAction('Bludgeon', 2)
+                        golem:setAction('Bludgeon', 3)
                     end
                     Emet.Messenger:message('Your arms are the size of tree trunks!')
                 end

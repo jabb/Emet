@@ -94,6 +94,21 @@ local StatusTable = {
             '$attacker exposes a weakness!',
         },
     },
+    ['A'] = {
+        icon = 'A',
+        name = 'Acid',
+        desc = 'Acidic wound.',
+        kind = 'special',
+        absorbs = 0,
+        triggerFirst = nil,
+        triggerLast = nil,
+        trigger = function(info)
+            info.ap = math.ceil(info.ap * 1.5)
+        end,
+        flavorTexts = {
+            '$defender\'s acidic wound burns!',
+        },
+    },
 }
 
 local ActionTable = {
@@ -259,6 +274,34 @@ local ActionTable = {
             },
             ['default'] = {
                 '$attacker bashes $defender.'
+            },
+        },
+    },
+    ['Acid'] = {
+        name = 'Acid',
+        desc = 'Acidic attack.',
+        kind = 'bump',
+        triggerFirst = function(info)
+            if info.status.icon ~= 'A' then
+                info.stop = "Applied acid."
+                for i=1, info.base_ap do
+                    info.defender:addStatuses('A')
+                end
+            end
+        end,
+        trigger = nil,
+        flavorTexts = {
+            ['health'] = {
+                '$attacker boils $defender.'
+            },
+            ['armor'] = {
+                '$attacker boils $defender.'
+            },
+            ['skill'] = {
+                '$attacker boils $defender.'
+            },
+            ['default'] = {
+                '$attacker boils $defender.'
             },
         },
     },
