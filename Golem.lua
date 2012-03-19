@@ -14,7 +14,6 @@ local Upgrades = {
             can = function(golem) return true end,
             apply = function(golem)
                 golem:modAction('Maul', 1)
-                golem:modUpgradeLevel(1)
                 Emet.Messenger:message('You are permanently a Clay Golem!')
             end
         },
@@ -26,7 +25,6 @@ local Upgrades = {
             apply = function(golem)
                 golem:setKind('Flesh')
                 golem:setStatuses({'F', 'F', 'F', 'F', 'F'}, true)
-                golem:modUpgradeLevel(1)
                 Emet.Messenger:message('You are permanently a Flesh Golem!')
             end
         },
@@ -38,7 +36,6 @@ local Upgrades = {
             apply = function(golem)
                 golem:setKind('Stone')
                 golem:setStatuses({'S', 'S', 'S', 'S', 'S'}, true)
-                golem:modUpgradeLevel(1)
                 Emet.Messenger:message('You are permanently a Stone Golem!')
             end
         },
@@ -50,7 +47,6 @@ local Upgrades = {
             apply = function(golem)
                 golem:setKind('Metal')
                 golem:setStatuses({'M', 'M', 'M', 'M', 'M'}, true)
-                golem:modUpgradeLevel(1)
                 Emet.Messenger:message('You are permanently a Metal Golem!')
             end
         },
@@ -66,19 +62,7 @@ local Upgrades = {
                 apply = function(golem)
                     golem:addStatuses({'C', 'C'}, true)
                     golem:modAction('Maul', 1)
-                    golem:modUpgradeLevel(1)
                     Emet.Messenger:message('You feel more powerful!')
-                end
-            },
-            {
-                desc = 'Wet clay. (Aquire the Rust action)',
-                emet = 0,
-                met = 1,
-                can = function(golem) return true end,
-                apply = function(golem)
-                    golem:setAction('Rust', 1)
-                    golem:modUpgradeLevel(1)
-                    Emet.Messenger:message('You are dripping!')
                 end
             },
             {
@@ -88,8 +72,17 @@ local Upgrades = {
                 can = function(golem) return true end,
                 apply = function(golem)
                     golem:addStatuses({'C', 'C', 'C', 'C'}, true)
-                    golem:modUpgradeLevel(1)
                     Emet.Messenger:message('You feel invulnerable!')
+                end
+            },
+            {
+                desc = 'Wet clay. (Aquire the Rust action)',
+                emet = 0,
+                met = 1,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:setAction('Rust', 1)
+                    Emet.Messenger:message('You are dripping!')
                 end
             },
         },
@@ -97,6 +90,28 @@ local Upgrades = {
     },
     Flesh = {
         -- Tier 1
+        {
+            {
+                desc = 'Tough skin. (+2 F Tokens)',
+                emet = 0,
+                met = 1,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:addStatuses({'F', 'F'}, true)
+                    Emet.Messenger:message('Your skin hardens!')
+                end
+            },
+            {
+                desc = 'Oozing skin. (Aquire the Rust action)',
+                emet = 0,
+                met = 1,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:setAction('Rust', 1)
+                    Emet.Messenger:message('You are dripping!')
+                end
+            },
+        },
     },
     Stone = {
         -- Tier 1
@@ -326,7 +341,10 @@ local function canUpgrade(self, num)
 end
 
 local function doUpgrade(self, num)
-    return self:getUpgrades()[num].apply(self)
+    if self:canUpgrade(num) then
+        golem:modUpgradeLevel(1)
+        return self:getUpgrades()[num].apply(self)
+    end
 end
 
 local function setTarget(self, x, y)

@@ -123,10 +123,6 @@ local ActionTable = {
                 '$attacker punches $defender.',
                 '$attacker jabs $defender.'
             },
-            ['magic'] = {
-                '$attacker punches $defender.',
-                '$attacker jabs $defender.'
-            },
             ['default'] = {
                 '$attacker punches $defender.',
                 '$attacker jabs $defender.'
@@ -151,9 +147,6 @@ local ActionTable = {
                 '$attacker mauls $defender.'
             },
             ['skill'] = {
-                '$attacker mauls $defender.'
-            },
-            ['magic'] = {
                 '$attacker mauls $defender.'
             },
             ['default'] = {
@@ -183,9 +176,6 @@ local ActionTable = {
             ['skill'] = {
                 '$attacker exposes $defender.'
             },
-            ['magic'] = {
-                '$attacker exposes $defender.'
-            },
             ['default'] = {
                 '$attacker exposes $defender.'
             },
@@ -211,9 +201,6 @@ local ActionTable = {
                 '$attacker drenches $defender.'
             },
             ['skill'] = {
-                '$attacker drenches $defender.'
-            },
-            ['magic'] = {
                 '$attacker drenches $defender.'
             },
             ['default'] = {
