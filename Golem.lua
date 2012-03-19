@@ -54,7 +54,7 @@ local Upgrades = {
         -- Tier 1
         {
             {
-                desc = 'Solid clay. (+2 C Tokens)',
+                desc = 'Baked clay. (+2 C Tokens)',
                 emet = 0,
                 met = 1,
                 can = function(golem) return true end,
@@ -70,11 +70,64 @@ local Upgrades = {
                 can = function(golem) return true end,
                 apply = function(golem)
                     golem:setAction('Rust', 1)
-                    Emet.Messenger:message('You are dripping!')
+                    Emet.Messenger:message('You arms start dripping!')
+                end
+            },
+            {
+                desc = 'Coarse clay. (Aquire the Slashing action)',
+                emet = 0,
+                met = 1,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:setAction('Slash', 1)
+                    Emet.Messenger:message('Your arms transform into sharp blades!')
+                end
+            },
+            {
+                desc = 'Hard clay. (Aquire the Bludgeon action)',
+                emet = 0,
+                met = 1,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:setAction('Bludgeon', 1)
+                    Emet.Messenger:message('Your arms mold into giant spiked spheres!')
                 end
             },
         },
         -- Tier 2
+        {
+            {
+                desc = 'Solid clay. (+4 C Tokens)',
+                emet = 0,
+                met = 2,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:addStatuses({'C', 'C', 'C', 'C'}, true)
+                    Emet.Messenger:message('Your clay hardens!')
+                end
+            },
+            {
+                desc = 'Strong arms. (+1 to Maul, Rust, Slash and Bludgeon)',
+                emet = 0,
+                met = 2,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    if golem:getAction('Maul') then
+                        golem:modAction('Maul', 1)
+                    end
+                    if golem:getAction('Rust') then
+                        golem:modAction('Rust', 1)
+                    end
+                    if golem:getAction('Slash') then
+                        golem:modAction('Slash', 1)
+                    end
+                    if golem:getAction('Bludgeon') then
+                        golem:modAction('Bludgeon', 1)
+                    end
+                    Emet.Messenger:message('Your arms increase in size!')
+                end
+            },
+        },
     },
     Flesh = {
         -- Tier 1

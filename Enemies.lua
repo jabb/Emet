@@ -38,7 +38,7 @@ local function GenerateGolem()
     end
 
     g:setStatuses(statuses)
-    g:setAction(action, math.ceil(Emet.Dungeon:getDungeonLevel() / 2))
+    g:setAction(action, math.floor(Emet.Dungeon:getDungeonLevel() / 2))
     g:setBump(action)
     return g
 end
