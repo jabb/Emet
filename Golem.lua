@@ -231,6 +231,9 @@ local function getMissingStatuses(self)
     end
     return missing
 end
+local function getMaxStatuses(self)
+    return self._being._max
+end
 
 local function heal(self, by)
     by = by or 1
@@ -274,7 +277,7 @@ local function cycleBump(self)
     local i = 1
     while true do
         local done = false
-        if bumps[i] or bumps[i] == self._selectedBump then
+        if bumps[i] and bumps[i] == self._selectedBump then
             done = true
         end
 
@@ -320,7 +323,7 @@ local function cycleSpecial(self)
     local i = 1
     while true do
         local done = false
-        if specials[i] or specials[i] == self._selectedSpecial then
+        if specials[i] and specials[i] == self._selectedSpecial then
             done = true
         end
 
@@ -490,6 +493,7 @@ local function Golem(x, y, name)
         setStatuses = setStatuses,
         addStatuses = addStatuses,
         getMissingStatuses = getMissingStatuses,
+        getMaxStatuses = getMaxStatuses,
         heal = heal,
         getStatusString = getStatusString,
         setDisplay = setDisplay,

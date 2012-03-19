@@ -174,12 +174,12 @@ while true do
             local input = Emet.Upgrades:input()
             if input == 'a' and Emet.Player:getEmet() >= 1 then
                 Emet.Player:modEmet(-1)
-                Emet.Player:heal(math.ceil(#Emet.Player:getMissingStatuses() * 0.1))
+                Emet.Player:heal(math.ceil(#Emet.Player:getMaxStatuses() * 0.1))
                 Emet.Messenger:message('You feel refreshed!')
                 moved = true
             elseif input == 'b' and Emet.Player:getEmet() >= 5 then
                 Emet.Player:modEmet(-5)
-                Emet.Player:heal(math.ceil(#Emet.Player:getMissingStatuses() * 0.5))
+                Emet.Player:heal(math.ceil(#Emet.Player:getMaxStatuses() * 0.5))
                 Emet.Messenger:message('You feel refreshed!')
                 moved = true
             end
@@ -194,12 +194,12 @@ while true do
             local input = Emet.Upgrades:input()
             if input == 'a' and Emet.Player:getEmet() >= 1 then
                 Emet.Player:modEmet(-1)
-                Emet.Player:heal(math.ceil(#Emet.Player:getMissingStatuses() * 0.1))
+                Emet.Player:heal(math.ceil(#Emet.Player:getMaxStatuses() * 0.1))
                 Emet.Messenger:message('You feel refreshed!')
                 moved = true
             elseif input == 'b' and Emet.Player:getEmet() >= 5 then
                 Emet.Player:modEmet(-5)
-                Emet.Player:heal(math.ceil(#Emet.Player:getMissingStatuses() * 0.5))
+                Emet.Player:heal(math.ceil(#Emet.Player:getMaxStatuses() * 0.5))
                 Emet.Messenger:message('You feel refreshed!')
                 moved = true
             end
@@ -230,7 +230,7 @@ while true do
     Emet.Stats:print(1, 5, 'Score: %s' % Emet.PlayerScore)
 
     Emet.Stats:print(1, 7, 'Actions')
-    Emet.Stats:print(1, 8, '1: %s (%d)' % {Emet.Player:getBump(), Emet.Player:getAction(Emet.Player:getBump())})
+    Emet.Stats:print(1, 8, '%s (%d)' % {Emet.Player:getBump(), Emet.Player:getAction(Emet.Player:getBump())})
     --Emet.Stats:print(1, 9, '2: %s' % Emet.Player:getSpecial())
 
     Emet.Info:clear()
