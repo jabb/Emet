@@ -59,7 +59,6 @@ Emet.Enemies:generate()
 Emet.Player = Golem(Emet.Dungeon:getRandomVacancy())
 Emet.Player:setDisplay('@', curses.green, curses.underline)
 Emet.Player:setNick(os.getenv('USER') or string.match(os.tmpname(), '_(.*)'))
-Emet.Player:modMet(1)
 
 Emet.Messenger = View(Emet.MessengerX, Emet.MessengerY, Emet.MessengerWidth, Emet.MessengerHeight)
 Emet.Stats = View(Emet.StatsX, Emet.StatsY, Emet.StatsWidth, Emet.StatsHeight)
@@ -175,12 +174,12 @@ while true do
             local input = Emet.Upgrades:input()
             if input == 'a' and Emet.Player:getEmet() >= 1 then
                 Emet.Player:modEmet(-1)
-                Emet.Player:heal(math.floor(Emet.Player:getStatusesMissing() * 0.1))
+                Emet.Player:heal(math.ceil(#Emet.Player:getMissingStatuses() * 0.1))
                 Emet.Messenger:message('You feel refreshed!')
                 moved = true
             elseif input == 'b' and Emet.Player:getEmet() >= 5 then
                 Emet.Player:modEmet(-5)
-                Emet.Player:heal(math.floor(Emet.Player:getStatusesMissing() * 0.5))
+                Emet.Player:heal(math.ceil(#Emet.Player:getMissingStatuses() * 0.5))
                 Emet.Messenger:message('You feel refreshed!')
                 moved = true
             end
@@ -195,12 +194,12 @@ while true do
             local input = Emet.Upgrades:input()
             if input == 'a' and Emet.Player:getEmet() >= 1 then
                 Emet.Player:modEmet(-1)
-                Emet.Player:heal(math.floor(Emet.Player:getStatusesMissing() * 0.1))
+                Emet.Player:heal(math.ceil(#Emet.Player:getMissingStatuses() * 0.1))
                 Emet.Messenger:message('You feel refreshed!')
                 moved = true
             elseif input == 'b' and Emet.Player:getEmet() >= 5 then
                 Emet.Player:modEmet(-5)
-                Emet.Player:heal(math.floor(Emet.Player:getStatusesMissing() * 0.5))
+                Emet.Player:heal(math.ceil(#Emet.Player:getMissingStatuses() * 0.5))
                 Emet.Messenger:message('You feel refreshed!')
                 moved = true
             end
