@@ -11,6 +11,15 @@ In Emet you control a golem. This golem starts off as a standard clay golem, and
 
 The goal of the game (roughly) is to get the highest score before dying. Currently the only way to gain score is by descending deeper.
 
+## Running
+
+To run you will need LuaJIT beta 6 or above and ncurses. If you get an error about not finding ncursesw. Change line 4 in curses.lua from `local ncurses = ffi.load 'ncursesw'` to `local ncurses = ffi.load 'ncurses'`.
+
+You can also play it through SSH, but the connection may be slow:
+
+    ssh emet@71.94.2.193
+    password: met
+
 ## Controls
 
 By default these are the controls, but you can change them at anytime (knowing a bit of Lua would help) in Keybindings.lua:
