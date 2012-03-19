@@ -159,7 +159,7 @@ local Upgrades = {
                 met = 2,
                 can = function(golem) return true end,
                 apply = function(golem)
-                    golem:addStatuses({'F', 'F'}, true)
+                    golem:addStatuses({'F', 'F', 'F', 'F'}, true)
                     Emet.Messenger:message('Your skin hardens!')
                 end
             },
@@ -169,6 +169,7 @@ local Upgrades = {
                 met = 2,
                 can = function(golem) return true end,
                 apply = function(golem)
+                    golem:modAction('Maul', 1)
                     if golem:getAction('Rust') then
                         golem:setAction('Rust', 2)
                     end
@@ -191,13 +192,39 @@ local Upgrades = {
                 end
             },
             {
-                desc = 'Sharp rocks. (Aquire the Slashing action)',
+                desc = 'Sharp rocks. (Aquire the Slash action)',
                 emet = 0,
                 met = 1,
                 can = function(golem) return true end,
                 apply = function(golem)
                     golem:setAction('Slash', 1)
                     Emet.Messenger:message('Your arms transform into sharp blades!')
+                end
+            },
+        },
+        -- Tier 2
+        {
+            {
+                desc = 'Diamond skin. (+4 S Tokens)',
+                emet = 0,
+                met = 2,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:addStatuses({'S', 'S', 'S', 'S'}, true)
+                    Emet.Messenger:message('Your skin hardens!')
+                end
+            },
+            {
+                desc = 'Razor arms. (+1 to Maul; +2 to Slash)',
+                emet = 0,
+                met = 2,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:modAction('Maul', 1)
+                    if golem:getAction('Slash') then
+                        golem:setAction('Slash', 2)
+                    end
+                    Emet.Messenger:message('You arms are sharper than razorblades!')
                 end
             },
         },
@@ -223,6 +250,32 @@ local Upgrades = {
                 apply = function(golem)
                     golem:setAction('Bludgeon', 1)
                     Emet.Messenger:message('Your arms mold into giant spiked spheres!')
+                end
+            },
+        },
+        -- Tier 2
+        {
+            {
+                desc = 'Spider silk shell. (+4 M Tokens)',
+                emet = 0,
+                met = 2,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:addStatuses({'M', 'M', 'M', 'M'}, true)
+                    Emet.Messenger:message('Your skin hardens!')
+                end
+            },
+            {
+                desc = 'Heavy arms. (+1 to Maul; +2 to Bludgeon)',
+                emet = 0,
+                met = 2,
+                can = function(golem) return true end,
+                apply = function(golem)
+                    golem:modAction('Maul', 1)
+                    if golem:getAction('Bludgeon') then
+                        golem:setAction('Bludgeon', 2)
+                    end
+                    Emet.Messenger:message('Your arms are the size of tree trunks!')
                 end
             },
         },
